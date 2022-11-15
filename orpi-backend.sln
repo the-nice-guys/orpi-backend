@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "orpi-backend", "orpi-backend\orpi-backend.csproj", "{41602C85-C534-491E-91E5-17C9DAD2F714}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure-service", "infrastructure-service\infrastructure-service.csproj", "{449DECC1-45B3-4D33-B433-7265CAD7D3AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{41602C85-C534-491E-91E5-17C9DAD2F714}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41602C85-C534-491E-91E5-17C9DAD2F714}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41602C85-C534-491E-91E5-17C9DAD2F714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
