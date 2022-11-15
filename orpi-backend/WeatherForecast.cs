@@ -2,6 +2,7 @@ namespace orpi_backend;
 
 public class WeatherForecast
 {
+    // test
     public DateTime Date { get; set; }
 
     public int TemperatureC { get; set; }
