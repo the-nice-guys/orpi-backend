@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Microsoft.IdentityModel.Tokens;
+using OrpiLibrary.Models;
 
 namespace OrpiLibrary.Interfaces {
     public interface ITokenClaimsManager {
-        public List<string> GetClaims(string token, TokenValidationParameters parameters);
+        public List<string> GetClaims(string token, TokenData data);
     }
 }
