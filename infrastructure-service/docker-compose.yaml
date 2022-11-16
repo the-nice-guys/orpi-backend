@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+    infrastructure-service-db:
+        image: postgres:latest
+        container_name: infrastructure-service-db
+        ports:
+        - 5432:5432
+        environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=infrastructure-service
+        #volumes:
+        #- ./data:/var/lib/postgresql/data
+        networks:
+        - infrastructure-service-network
+
+networks:
+    infrastructure-service-network:
+      driver: bridge
