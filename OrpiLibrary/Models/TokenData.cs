@@ -6,18 +6,16 @@ namespace OrpiLibrary.Models {
     public abstract class TokenData {
         public string Issuer { get; }
         public string Audience { get; }
-        public string Signature { get; protected init; }
-        public double Lifetime { get; protected init; }
+        public string Signature { get; }
+        public double Lifetime { get; }
+        public TokenValidationParameters ValidationParameters { get; }
 
-        protected TokenData() {
+        protected TokenData(string signature, double lifetime) {
             Issuer = "AuthenticationServer";
             Audience = "ORPIClient";
-            Signature = "";
-            Lifetime = 0;
-        }
-
-        public virtual TokenValidationParameters GetTokenValidationParameters() {
-            return new TokenValidationParameters {
+            Signature = signature;
+            Lifetime = lifetime;
+            ValidationParameters = new TokenValidationParameters {
                 ValidateIssuer = true, 
                 ValidIssuer = Issuer,
                 ValidateAudience = true,

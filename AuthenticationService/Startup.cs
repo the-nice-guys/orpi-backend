@@ -28,7 +28,7 @@ namespace AuthenticationService {
             services.AddSingleton(provider => new TokenDataManager(accessTokenData, refreshTokenData));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = refreshTokenData.GetTokenValidationParameters();
+                options.TokenValidationParameters = refreshTokenData.ValidationParameters;
             });
         }
         

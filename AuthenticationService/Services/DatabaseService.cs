@@ -16,13 +16,17 @@ namespace AuthenticationService.Services {
         public async Task<bool> AddUser(RegistrationModel user) {
             const string request = "INSERT INTO users (login, email, name, surname) VALUES (@login, @email, @name, @surname);" +
                                    "INSERT INTO accounts (login, password) VALUES (@login, @password);";
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync();
             try {
-                await using var connection = new NpgsqlConnection(_connectionString);
                 await connection.ExecuteAsync(request, user);
+                await transaction.CommitAsync();
             } catch {
+                await transaction.RollbackAsync();
                 return false;
             }
-
+            
             return true;
         }
 
