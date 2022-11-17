@@ -1,7 +1,9 @@
 using Dapper;
+using infrastructure_service.Interfaces;
+using infrastructure_service.Models;
 using Npgsql;
 
-namespace infrastructure_service.Models;
+namespace infrastructure_service.Services;
 
 public class InfrastructureRepository: IInfrastructureRepository
 {
@@ -12,24 +14,25 @@ public class InfrastructureRepository: IInfrastructureRepository
         _connectionString = connectionString;
     }
     
-    public async Task Create(Infrastructure infrastructure)
+    public async Task<long> Create(Infrastructure infrastructure)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("INSERT INTO infrastructure (name, description) VALUES (@name, @description)", connection);
+        await using var command = new NpgsqlCommand("INSERT INTO infrastructures (name, description) VALUES (@name, @description) returning id", connection);
         var queryParameters = new
         {
             name = infrastructure.Name,
             description = infrastructure.Description
         };
-        await connection.ExecuteAsync(command.CommandText, queryParameters);
+        // await connection.ExecuteAsync(command.CommandText, queryParameters);
+        return await connection.QuerySingleAsync<long>(command.CommandText, queryParameters);
     }
 
-    public async Task Update(Infrastructure infrastructure)
+    public async Task<bool> Update(Infrastructure infrastructure)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("UPDATE infrastructure SET name = @name, description = @description WHERE id = @id", connection);
+        await using var command = new NpgsqlCommand("UPDATE infrastructures SET name = @name, description = @description WHERE id = @id", connection);
         var queryParameters = new
         {
             id = infrastructure.Id,
@@ -37,25 +40,27 @@ public class InfrastructureRepository: IInfrastructureRepository
             description = infrastructure.Description
         };
         await connection.ExecuteAsync(command.CommandText, queryParameters);
+        return true;
     }
 
-    public async Task Delete(Infrastructure infrastructure)
+    public async Task<bool> Delete(long id)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("DELETE FROM infrastructure WHERE id = @id", connection);
+        await using var command = new NpgsqlCommand("DELETE FROM infrastructures WHERE id = @id", connection);
         var queryParameters = new
         {
-            id = infrastructure.Id
+            id = id
         };
         await connection.ExecuteAsync(command.CommandText, queryParameters);
+        return true;
     }
 
     public async Task<Infrastructure> Get(long id)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("SELECT * FROM infrastructure WHERE id = @id", connection);
+        await using var command = new NpgsqlCommand("SELECT * FROM infrastructures WHERE id = @id", connection);
         var queryParameters = new
         {
             id = id
@@ -68,7 +73,7 @@ public class InfrastructureRepository: IInfrastructureRepository
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("SELECT * FROM infrastructure WHERE user_id = @userId", connection);
+        await using var command = new NpgsqlCommand("SELECT * FROM infrastructures WHERE user_id = @userId", connection);
         var queryParameters = new
         {
             userId = userId
