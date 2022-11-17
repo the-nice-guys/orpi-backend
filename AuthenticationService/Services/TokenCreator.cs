@@ -5,21 +5,19 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using OrpiLibrary.Interfaces;
+using OrpiLibrary.Models;
 
 namespace AuthenticationService.Services {
     public class TokenCreator: ITokenCreator {
-        private const string Issuer = "AuthenticationServer";
-        private const string Audience = "ORPIClient";
-        
-        public string CreateToken(double lifetime, params string[] claims) {
+        public string CreateToken(TokenData data, params string[] claims) {
            var jwt = new JwtSecurityToken(
-                issuer: Issuer,
-                audience: Audience,
+                issuer: data.Issuer,
+                audience: data.Audience,
                 claims: GetIdentity(claims[0], claims[1]).Claims,
                 notBefore: DateTime.Now.ToUniversalTime(),
-                expires: DateTime.Now.AddMinutes(lifetime).ToUniversalTime(),
+                expires: DateTime.Now.AddMinutes(data.Lifetime).ToUniversalTime(),
                 signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Hello")), 
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(data.Signature)),
                     SecurityAlgorithms.HmacSha256)
                 );
             

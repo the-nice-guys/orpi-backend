@@ -1,4 +1,4 @@
-using AuthenticationService.Models;
+using AuthenticationService.Interfaces;
 using AuthenticationService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,17 +6,26 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OrpiLibrary;
+using OrpiLibrary.Models;
 using OrpiLibrary.Interfaces;
 
 namespace AuthenticationService {
     public class Startup {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services) {
+            var accessTokenData = new AccessTokenData();
             var refreshTokenData = new RefreshTokenData();
             services.AddMvc();
-            services.AddSingleton<ITokenCreator, TokenCreator>();
-            services.AddSingleton<ICryptographer, Cryptographer>();
+            services.AddTransient<ITokenCreator, TokenCreator>();
+            services.AddTransient<ICryptographer, Cryptographer>();
+            services.AddSingleton<IUsersWorker>(provider => new DatabaseService(
+                host: Config.Host,
+                port: Config.Port,
+                database: Config.Database,
+                user: Config.User,
+                password: Config.Password
+                )
+            );
+            services.AddSingleton(provider => new TokenDataManager(accessTokenData, refreshTokenData));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = refreshTokenData.GetTokenValidationParameters();
@@ -28,7 +37,6 @@ namespace AuthenticationService {
                 app.UseDeveloperExceptionPage();
             }
             
-            //TODO setup CORS
             app.UseCors(builder => {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             });
