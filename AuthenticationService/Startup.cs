@@ -18,11 +18,11 @@ namespace AuthenticationService {
             services.AddTransient<ITokenCreator, TokenCreator>();
             services.AddTransient<ICryptographer, Cryptographer>();
             services.AddSingleton<IUsersWorker>(provider => new DatabaseService(
-                host: Config.Host,
-                port: Config.Port,
-                database: Config.Database,
-                user: Config.User,
-                password: Config.Password
+                host: Config.AuthenticationServiceDatabaseHost,
+                port: Config.AuthenticationServiceDatabasePort,
+                database: Config.AuthenticationServiceDatabaseName,
+                user: Config.AuthenticationServiceDatabaseUser,
+                password: Config.AuthenticationServiceDatabasePassword
                 )
             );
             services.AddSingleton(provider => new TokenDataManager(accessTokenData, refreshTokenData));
