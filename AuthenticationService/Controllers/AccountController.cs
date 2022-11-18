@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthenticationService.Interfaces;
 using AuthenticationService.Models;
@@ -11,6 +15,8 @@ namespace AuthenticationService.Controllers {
     [ApiController]
     [Route("/account/")]
     public class AccountController: Controller {
+        private const int NumberOfRequiredClaims = 2;
+        
         private readonly IUsersWorker _usersWorker;
         private readonly ITokenCreator _tokenCreator;
         private readonly ICryptographer _cryptographer;
@@ -27,29 +33,42 @@ namespace AuthenticationService.Controllers {
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationModel user) {
             user.Password = _cryptographer.Encrypt(user.Password);
-            if (await _usersWorker.AddUser(user)) {
-                return Ok();
-            }
+            try {
+                if (await _usersWorker.CheckUserExistence(user.Login))
+                    return BadRequest("Account with this login is already registered.");
 
-            return BadRequest("Failed to add new user.");
+                if (!await _usersWorker.AddUser(user))
+                    return Ok("Failed to add user.");
+            } catch {
+                return BadRequest("Service is temporarily unavailable.");
+            }
+            
+            return Ok("Account was successfully registered.");
         }
 
         [HttpPost("auth")]
         public async Task<IActionResult> Authorize([FromBody] AuthorizationModel account) {
-            var password = await _usersWorker.GetUserPassword(account.Login);
-            if (password is null) {
-                return NotFound("User with this login does not exist");
+            string? password;
+            try {
+                password = await _usersWorker.GetUserPassword(account.Login);
+            } catch {
+                return BadRequest("Service is temporarily unavailable.");
             }
 
-            if (password != _cryptographer.Encrypt(account.Password)) {
+            if (password is null) 
+                return NotFound("User with this login does not exist");
+
+            if (password != _cryptographer.Encrypt(account.Password))
                 return BadRequest("Incorrect password");
-            }
+
+            var claims = new List<Claim> {
+                new (ClaimsIdentity.DefaultNameClaimType, account.Login),
+                new (ClaimsIdentity.DefaultRoleClaimType, Roles.User.ToString()),
+            };
             
             return Ok(new {
-                AccessToken = 
-                    _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, account.Login, Roles.User.ToString()),
-                RefreshToken = 
-                    _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, account.Login, Roles.User.ToString()),
+                AccessToken = _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, claims),
+                RefreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, claims),
             });
         }
 
@@ -57,14 +76,13 @@ namespace AuthenticationService.Controllers {
         [HttpGet("refresh")]
         public IActionResult Refresh() {
             var refreshToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var claims = _tokenDataManager.GetClaims(refreshToken, _tokenDataManager.RefreshTokenData);
-            (string login, string role) = (claims[0].Value, claims[1].Value);
-            if (_tokenDataManager.GetTimeBeforeExpiration(refreshToken, _tokenDataManager.RefreshTokenData) < Config.AccessTokenLifetime) {
-                refreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, login, role);
-            }
-            
+            var claims = _tokenDataManager.GetClaims(refreshToken, _tokenDataManager.RefreshTokenData).ToArray();
+            claims = claims[..Math.Min(claims.Length, NumberOfRequiredClaims)];
+            if (_tokenDataManager.GetTimeBeforeExpiration(refreshToken, _tokenDataManager.RefreshTokenData) < Config.AccessTokenLifetime)
+                refreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, claims);
+
             return Ok(new {
-                AccessToken = _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, login, role),
+                AccessToken = _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, claims),
                 RefreshToken = refreshToken
             });
         }

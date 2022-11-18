@@ -22,12 +22,18 @@ namespace AuthenticationService.Services {
             try {
                 await connection.ExecuteAsync(request, user);
                 await transaction.CommitAsync();
+                return true;
             } catch {
                 await transaction.RollbackAsync();
-                return false;
             }
-            
-            return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckUserExistence(string login) {
+            const string request = "SELECT COUNT(1) FROM USERS WHERE login = @login";
+            await using var connection = new NpgsqlConnection(_connectionString);
+            return (await connection.QueryAsync<int>(request, new {login})).FirstOrDefault() == 1;
         }
 
         public async Task<string?> GetUserPassword(string login) {

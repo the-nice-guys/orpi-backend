@@ -17,15 +17,12 @@ namespace AuthenticationService.Services {
             RefreshTokenData = refreshTokenData;
         }
 
-        public List<Claim> GetClaims(string token, TokenData data) {
-            var handler = new JwtSecurityTokenHandler();
-            var claims = handler.ValidateToken(token, data.ValidationParameters, out SecurityToken _).Claims.ToList();
-            return claims;
+        public IEnumerable<Claim> GetClaims(string token, TokenData data) {
+            return new JwtSecurityTokenHandler().ValidateToken(token, data.ValidationParameters, out SecurityToken _).Claims;
         }
 
         public double GetTimeBeforeExpiration(string token, TokenData data) {
-            var handler = new JwtSecurityTokenHandler();
-            handler.ValidateToken(token, data.ValidationParameters, out SecurityToken validatedToken);
+            new JwtSecurityTokenHandler().ValidateToken(token, data.ValidationParameters, out SecurityToken validatedToken);
             return (validatedToken.ValidTo.ToUniversalTime() - DateTime.Now.ToUniversalTime()).TotalMinutes;
         }
     }

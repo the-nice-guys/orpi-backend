@@ -3,8 +3,8 @@
 namespace OrpiLibrary {
     public static class Config {
         // Tokens lifetime
-        public const double AccessTokenLifetime = 15;
-        public const double RefreshTokenLifetime = 120;
+        public const double AccessTokenLifetime = 1;
+        public const double RefreshTokenLifetime = 1;
         // Signatures
         public const string AccessTokenSignature = "AccessSecretSignature791";
         public const string RefreshTokenSignature = "RefreshSecretSignature274";

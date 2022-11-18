@@ -17,15 +17,15 @@ namespace AuthenticationService {
             services.AddMvc();
             services.AddTransient<ITokenCreator, TokenCreator>();
             services.AddTransient<ICryptographer, Cryptographer>();
-            services.AddSingleton<IUsersWorker>(provider => new DatabaseService(
-                host: Config.AuthenticationServiceDatabaseHost,
-                port: Config.AuthenticationServiceDatabasePort,
-                database: Config.AuthenticationServiceDatabaseName,
-                user: Config.AuthenticationServiceDatabaseUser,
-                password: Config.AuthenticationServiceDatabasePassword
+            services.AddSingleton<IUsersWorker>(new DatabaseService(
+                Config.AuthenticationServiceDatabaseHost,
+                Config.AuthenticationServiceDatabasePort,
+                Config.AuthenticationServiceDatabaseName,
+                Config.AuthenticationServiceDatabaseUser,
+                Config.AuthenticationServiceDatabasePassword
                 )
             );
-            services.AddSingleton(provider => new TokenDataManager(accessTokenData, refreshTokenData));
+            services.AddSingleton(new TokenDataManager(accessTokenData, refreshTokenData));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = refreshTokenData.ValidationParameters;

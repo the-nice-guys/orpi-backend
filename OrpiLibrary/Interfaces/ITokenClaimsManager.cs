@@ -4,6 +4,6 @@ using OrpiLibrary.Models;
 
 namespace OrpiLibrary.Interfaces {
     public interface ITokenClaimsManager {
-        public List<Claim> GetClaims(string token, TokenData data);
+        public IEnumerable<Claim> GetClaims(string token, TokenData data);
     }
 }
