@@ -24,6 +24,14 @@ public class ServiceController : Controller
         return Ok(service);
     }
     
+    [HttpGet]
+    [Route("get_services_for_infrastructure")]
+    public async Task<IActionResult> GetServicesForInfrastructure(long id)
+    {
+        var services = await _serviceRepository.GetAllForInfrastructure(id);
+        return Ok(services);
+    }
+    
     [HttpPost]
     [Route("create_service")]
     public async Task<IActionResult> CreateService(Service service)

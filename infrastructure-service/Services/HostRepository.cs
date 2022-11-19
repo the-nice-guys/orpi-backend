@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Dapper;
 using infrastructure_service.Interfaces;
+using infrastructure_service.Models;
 using Npgsql;
 using Host = infrastructure_service.Models.Host;
 
@@ -24,6 +26,32 @@ public class HostRepository: IHostRepository
             id = id
         };
         return await connection.QuerySingleAsync<Host>(command.CommandText, queryParameters);
+    }
+
+    public async Task<IEnumerable<Host>> GetAllForInfrastructure(long infrastructureId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand("select * from hosts h join (select hs.host_id as id, array_to_json(array_agg(s)) as services from host_service as hs join services as s on hs.service_id = s.id group by hs.host_id) as t using (id) where h.id in (select host_id from infrastructure_host where infrastructure_id = 5);", connection);
+        var queryParameters = new
+        {
+            id = infrastructureId
+        };
+        var result = await connection.QueryAsync(command.CommandText, queryParameters);
+        
+        var hosts = new List<Host>();
+        foreach (var item in result)
+        {
+            var host = new Host
+            {
+                Id = item.id,
+                Name = item.name,
+                Services = JsonSerializer.Deserialize<List<Service>>(item.services as string ?? string.Empty)
+            };
+            hosts.Add(host);
+        }
+
+        return hosts;
     }
 
     public async Task<long> Create(Host host)

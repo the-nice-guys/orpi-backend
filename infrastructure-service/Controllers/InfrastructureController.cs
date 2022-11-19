@@ -27,24 +27,17 @@ public class InfrastructureController: ControllerBase
     }
     
     [HttpGet]
-    [Route("get_host")]
-    public async Task<Host> GetHost(long id)
-    {
-        return await _hostRepository.Get(id);
-    }
-    
-    [HttpGet]
-    [Route("get_service")]
-    public async Task<Service> GetService(long id)
-    {
-        return await _serviceRepository.Get(id);
-    }
-    
-    [HttpGet]
     [Route("get_infrastructure")]
     public async Task<Infrastructure> GetInfrastructure(long id)
     {
         return await _infrastructureRepository.Get(id);
+    }
+    
+    [HttpGet]
+    [Route("get_infrastructures_for_user")]
+    public async Task<IEnumerable<Infrastructure>> GetInfrastructuresForUser(long id)
+    {
+        return await _infrastructureRepository.GetAllForUser(id);
     }
     
     [HttpPost]

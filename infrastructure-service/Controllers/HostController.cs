@@ -23,6 +23,13 @@ public class HostController : Controller
         return await _hostRepository.Get(id);
     }
     
+    [HttpGet]
+    [Route("get_all_for_infrastructure")]
+    public async Task<IEnumerable<Models.Host>> GetForInfrastructure(long id)
+    {
+        return await _hostRepository.GetAllForInfrastructure(id);
+    }
+    
     [HttpPost]
     [Route("create_host")]
     public async Task<long> Create(Models.Host host)

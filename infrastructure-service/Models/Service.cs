@@ -14,7 +14,7 @@ public class Service
     public TimeSpan Uptime { get; set; }
     [JsonPropertyName("status")]
     public Status Status { get; set; }
-    [JsonPropertyName("last_updated")]
+    [JsonPropertyName("lastUpdated")]
     public DateTime LastUpdated { get; set; }
     public double AverageCpuUsage { get; set; }
     public double AverageMemoryUsage { get; set; }

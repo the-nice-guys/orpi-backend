@@ -26,6 +26,30 @@ public class ServiceRepository: IServiceRepository
         return await connection.QueryFirstOrDefaultAsync<Service>(command.CommandText, queryParameters);
     }
 
+    public async Task<IEnumerable<Service>> GetAllForInfrastructure(long infrastructureId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var command = new NpgsqlCommand("select s.id, s.name, s.description, s.\"lastUpdated\" from infrastructures as i left outer join infrastructure_host as ih on i.id = ih.infrastructure_id left outer join hosts as h on ih.host_id = h.id left outer join host_service hs on h.id = hs.host_id left outer join services s on hs.service_id = s.id where i.id = 5;", connection);
+        var queryParameters = new
+        {
+            id = infrastructureId
+        };
+        var result = await connection.QueryAsync(command.CommandText, queryParameters);
+        var list = new List<Service>();
+        foreach (var item in result)
+        {
+            list.Add(new Service
+            {
+                Id = item.id,
+                Name = item.name,
+                Description = item.description,
+                LastUpdated = item.lastUpdated
+            });
+        }
+        return list;
+    }
+
     public async Task<bool> Update(Service service)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
