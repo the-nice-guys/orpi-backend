@@ -5,17 +5,19 @@ namespace infrastructure_service.Services;
 
 public class ConsumerService: IHostedService
 {
-    private readonly string _topic = "massages";
+    private readonly string[] _topics;
     private readonly string _groupId = "test_group";
     private readonly string _bootstrapServers = "localhost:9092";
     private readonly IInfrastructureRepository _infrastructureRepository;
     
-    public ConsumerService(IInfrastructureRepository infrastructureRepository)
+    public ConsumerService(IInfrastructureRepository infrastructureRepository, params string[] topics)
     {
+        _topics = topics;
+
         _infrastructureRepository = infrastructureRepository;
     }
 
-    async void Consume(CancellationToken cancellationToken)
+    async void Consume(string topic, CancellationToken cancellationToken)
     {
         var config = new ConsumerConfig
         {
@@ -25,7 +27,7 @@ public class ConsumerService: IHostedService
         };
         
         using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
-        consumer.Subscribe(_topic);
+        consumer.Subscribe(topic);
         
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -36,7 +38,11 @@ public class ConsumerService: IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        Task.Run(() => Consume(cancellationToken), cancellationToken);
+        foreach (var topic in _topics)
+        {
+            Task.Run(() => Consume(topic, cancellationToken), cancellationToken);
+        }
+
         return Task.CompletedTask;
     }
 

@@ -1,6 +1,7 @@
 using infrastructure_service.Interfaces;
 using infrastructure_service.Models;
 using Microsoft.AspNetCore.Mvc;
+using Host = infrastructure_service.Models.Host;
 
 namespace infrastructure_service.Controllers;
 
@@ -9,39 +10,61 @@ namespace infrastructure_service.Controllers;
 public class InfrastructureController: ControllerBase
 {
     private readonly ILogger<InfrastructureController> _logger;
-    private readonly IInfrastructureRepository _repository;
+    private readonly IInfrastructureRepository _infrastructureRepository;
+    private readonly IHostRepository _hostRepository;
+    private readonly IServiceRepository _serviceRepository;
 
-    public InfrastructureController(ILogger<InfrastructureController> logger, IInfrastructureRepository repository)
+    public InfrastructureController(
+        ILogger<InfrastructureController> logger,
+        IInfrastructureRepository infrastructureRepository,
+        IHostRepository hostRepository,
+        IServiceRepository serviceRepository)
     {
         _logger = logger;
-        _repository = repository;
+        _infrastructureRepository = infrastructureRepository;
+        _hostRepository = hostRepository;
+        _serviceRepository = serviceRepository;
+    }
+    
+    [HttpGet]
+    [Route("get_host")]
+    public async Task<Host> GetHost(long id)
+    {
+        return await _hostRepository.Get(id);
+    }
+    
+    [HttpGet]
+    [Route("get_service")]
+    public async Task<Service> GetService(long id)
+    {
+        return await _serviceRepository.Get(id);
     }
     
     [HttpGet]
     [Route("get_infrastructure")]
-    public async Task<Infrastructure> Get(long id)
+    public async Task<Infrastructure> GetInfrastructure(long id)
     {
-        return await _repository.Get(id);
+        return await _infrastructureRepository.Get(id);
     }
     
     [HttpPost]
     [Route("create_infrastructure")]
-    public async Task<long> Create(Infrastructure infrastructure)
+    public async Task<long> CreateInfrastructure(Infrastructure infrastructure)
     {
-        return await _repository.Create(infrastructure);
+        return await _infrastructureRepository.Create(infrastructure);
     }
     
     [HttpPut]
     [Route("update_infrastructure")]
-    public async Task<bool> Update(Infrastructure infrastructure)
+    public async Task<bool> UpdateInfrastructure(Infrastructure infrastructure)
     {
-        return await _repository.Update(infrastructure);
+        return await _infrastructureRepository.Update(infrastructure);
     }
     
     [HttpDelete]
     [Route("delete_infrastructure")]
-    public async Task<bool> Delete(long id)
+    public async Task<bool> DeleteInfrastructure(long id)
     {
-        return await _repository.Delete(id);
+        return await _infrastructureRepository.Delete(id);
     }
 }

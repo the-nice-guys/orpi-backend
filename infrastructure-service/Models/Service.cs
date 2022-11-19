@@ -1,12 +1,20 @@
+using System.Text.Json.Serialization;
+
 namespace infrastructure_service.Models;
 
 public class Service
 {
+    [JsonPropertyName("id")]
     public long Id { get; set; }
+    [JsonPropertyName("name")]
     public string? Name { get; set; }
+    [JsonPropertyName("description")]
     public string? Description { get; set; }
+    [JsonPropertyName("uptime")]
     public TimeSpan Uptime { get; set; }
+    [JsonPropertyName("status")]
     public Status Status { get; set; }
+    [JsonPropertyName("last_updated")]
     public DateTime LastUpdated { get; set; }
     public double AverageCpuUsage { get; set; }
     public double AverageMemoryUsage { get; set; }

@@ -7,4 +7,5 @@ public class Infrastructure
     public string? Description { get; set; }
     public string? Icon { get; set; }
     public List<Host>? Hosts { get; set; }
+    //public dynamic Hosts { get; set; }
 }
