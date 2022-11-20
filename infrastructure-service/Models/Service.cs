@@ -15,7 +15,7 @@ public class Service
     [JsonPropertyName("status")]
     public Status Status { get; set; }
     [JsonPropertyName("lastUpdated")]
-    public DateTime LastUpdated { get; set; }
+    public DateTime? LastUpdated { get; set; }
     public double AverageCpuUsage { get; set; }
     public double AverageMemoryUsage { get; set; }
     public double AverageDiskUsage { get; set; }

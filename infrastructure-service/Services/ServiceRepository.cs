@@ -26,6 +26,19 @@ public class ServiceRepository: IServiceRepository
         return await connection.QueryFirstOrDefaultAsync<Service>(command.CommandText, queryParameters);
     }
 
+    public async Task<bool> InsertHostService(long hostId, long serviceId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var command = new NpgsqlCommand("INSERT INTO host_service (host_id, service_id) VALUES (@hostId, @serviceId)", connection);
+        var queryParameters = new
+        {
+            hostId = hostId,
+            serviceId = serviceId
+        };
+        return await connection.ExecuteAsync(command.CommandText, queryParameters) > 0;
+    }
+
     public async Task<IEnumerable<Service>> GetAllForInfrastructure(long infrastructureId)
     {
         await using var connection = new NpgsqlConnection(_connectionString);

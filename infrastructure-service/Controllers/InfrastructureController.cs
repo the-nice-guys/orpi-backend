@@ -42,9 +42,37 @@ public class InfrastructureController: ControllerBase
     
     [HttpPost]
     [Route("create_infrastructure")]
-    public async Task<long> CreateInfrastructure(Infrastructure infrastructure)
+    public async Task<long> CreateInfrastructure(CreateInfrastuctureRequest request)
     {
-        return await _infrastructureRepository.Create(infrastructure);
+        List<Host> hosts = new List<Host>();
+        request.Infrastructure.Hosts?.ForEach(async host =>
+        {
+            hosts.Add(host);
+            var hostId = await _hostRepository.Create(host);
+            host.Id = hostId;
+
+            foreach (var hostService in host.Services)
+            {
+                var serviceId = await _serviceRepository.Create(hostService);
+                hostService.Id = serviceId;
+            }
+        });
+        
+        request.Infrastructure.Hosts = hosts;
+        var infraId =  await _infrastructureRepository.Create(request.Infrastructure);
+        request.Infrastructure.Id = infraId;
+        
+        await _infrastructureRepository.InsertUserInfrastructure(request.UserId, infraId);
+        hosts.ForEach(async host =>
+        {
+            await _hostRepository.InsertInfrastructureHost(infraId, host.Id);
+
+            foreach (var hostService in host.Services)
+            {
+                await _serviceRepository.InsertHostService(host.Id, hostService.Id);
+            }
+        });
+        return infraId;
     }
     
     [HttpPut]

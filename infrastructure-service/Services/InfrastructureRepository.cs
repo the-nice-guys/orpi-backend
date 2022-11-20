@@ -20,14 +20,29 @@ public class InfrastructureRepository: IInfrastructureRepository
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("INSERT INTO infrastructures (name, description) VALUES (@name, @description) returning id", connection);
+        await using var command = new NpgsqlCommand("INSERT INTO infrastructures (name, description, icon) VALUES (@name, @description, @icon) returning id", connection);
         var queryParameters = new
         {
             name = infrastructure.Name,
-            description = infrastructure.Description
+            description = infrastructure.Description,
+            icon = infrastructure.Icon
         };
         // await connection.ExecuteAsync(command.CommandText, queryParameters);
         return await connection.QuerySingleAsync<long>(command.CommandText, queryParameters);
+    }
+
+    public async Task<bool> InsertUserInfrastructure(long userId, long infrastructureId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand("INSERT INTO user_infrastructures (user_id, infrastructure_id) VALUES (@userId, @infrastructureId)", connection);
+        var queryParameters = new
+        {
+            userId,
+            infrastructureId
+        };
+        await connection.ExecuteAsync(command.CommandText, queryParameters);
+        return true;
     }
 
     public async Task<bool> Update(Infrastructure infrastructure)
