@@ -9,7 +9,7 @@ builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IInfrastructureRepository, InfrastructureRepository>(provider => new InfrastructureRepository(connectionString));
+builder.Services.AddSingleton<IInfrastructureRepository, InfrastructureRepository>(provider => new InfrastructureRepository(builder.Configuration));
 builder.Services.AddSingleton<IHostRepository, HostRepository>(provider => new HostRepository(builder.Configuration));
 builder.Services.AddSingleton<IServiceRepository, ServiceRepository>(provider => new ServiceRepository(builder.Configuration));
 //builder.Services.AddSingleton<IHostedService, ConsumerService>(provider => new ConsumerService((IInfrastructureRepository) provider.GetService(typeof(InfrastructureRepository)), "massages"));

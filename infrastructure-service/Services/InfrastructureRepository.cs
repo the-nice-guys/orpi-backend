@@ -11,9 +11,9 @@ public class InfrastructureRepository: IInfrastructureRepository
 {
     private string _connectionString;
 
-    public InfrastructureRepository(string connectionString)
+    public InfrastructureRepository(IConfiguration configuration)
     {
-        _connectionString = connectionString;
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
     
     public async Task<long> Create(Infrastructure infrastructure)
