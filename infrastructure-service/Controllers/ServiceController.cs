@@ -39,6 +39,14 @@ public class ServiceController : Controller
         return Ok(await _serviceRepository.Create(service));
     }
     
+    [HttpPost]
+    [Route("add_service_to_host")]
+    public async Task<IActionResult> AddToHost(AddServiceRequest request)
+    {
+        var id = await _serviceRepository.Create(request.Service);
+        return Ok(await _serviceRepository.InsertHostService(request.HostId, id));
+    }
+    
     [HttpPut]
     [Route("update_service")]
     public async Task<IActionResult> UpdateService(Service service)

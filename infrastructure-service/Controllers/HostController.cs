@@ -1,4 +1,5 @@
 using infrastructure_service.Interfaces;
+using infrastructure_service.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace infrastructure_service.Controllers;
@@ -35,6 +36,15 @@ public class HostController : Controller
     public async Task<long> Create(Models.Host host)
     {
         return await _hostRepository.Create(host);
+    }
+    
+    [HttpPost]
+    [Route("add_host_to_infrastructure")]
+    public async Task<long> AddToInfrastructure(AddHostRequest request)
+    {
+        var id = await _hostRepository.Create(request.Host);
+        await _hostRepository.InsertInfrastructureHost(request.InfrastructureId, id);
+        return id;
     }
     
     [HttpPut]
