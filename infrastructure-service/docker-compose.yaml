@@ -1,6 +1,19 @@
 version: '3.7'
 
 services:
+    infrastructure-service:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: infrastructure-service
+        ports:
+            - "5175:80"
+            - "7030:7030"
+        depends_on:
+            - infrastructure-service-db
+        environment:
+            DB_HOST: infrastructure-service-db
+    
     infrastructure-service-db:
         image: postgres:latest
         container_name: infrastructure-service-db

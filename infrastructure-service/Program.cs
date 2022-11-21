@@ -3,7 +3,8 @@ using infrastructure_service.Models;
 using infrastructure_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-string connectionString = "host=localhost;port=5432;database=infrastructure-service;username=postgres;password=postgres";
+string dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+string connectionString = $"host={dbHost};port=5432;database=infrastructure-service;username=postgres;password=postgres";
 // add connection string to the configuration
 builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 
