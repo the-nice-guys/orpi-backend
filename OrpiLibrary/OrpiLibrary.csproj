@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+<<<<<<< HEAD:OrpiLibrary/OrpiLibrary.csproj
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.11" />
+=======
+        <PackageReference Include="Confluent.Kafka" Version="1.9.4-RC1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+>>>>>>> origin/infrastructure-service:orpi-backend/orpi-backend.csproj
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.11" />
     </ItemGroup>
 

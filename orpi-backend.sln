@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrpiLibrary", "OrpiLibrary\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{CDE34E61-13E1-42A9-A814-76782710C94B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure-service", "infrastructure-service\infrastructure-service.csproj", "{449DECC1-45B3-4D33-B433-7265CAD7D3AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{CDE34E61-13E1-42A9-A814-76782710C94B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDE34E61-13E1-42A9-A814-76782710C94B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDE34E61-13E1-42A9-A814-76782710C94B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {449DECC1-45B3-4D33-B433-7265CAD7D3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
