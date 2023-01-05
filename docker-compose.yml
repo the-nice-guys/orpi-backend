@@ -1,0 +1,27 @@
+version: "3.5"
+
+services:
+  auth-service:
+    container_name: auth-service
+    build: 
+      context: .
+      dockerfile: AuthenticationService/Dockerfile
+    ports:
+      - 7133:7133
+    depends_on:
+      auth-service-database:
+        condition: service_healthy
+  auth-service-database:
+    image: postgres:14.4
+    container_name: auth-service-database
+    environment:
+      - POSTGRES_USER=auth_service
+      - POSTGRES_PASSWORD=authpass
+      - POSTGRES_DB=orpi
+      - PGPORT=5432
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "exit 0"
+    # volumes: 
+    #   - ./postgresql-auth-service-data:/var/lib/postgresql/data
