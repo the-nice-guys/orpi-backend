@@ -1,5 +1,6 @@
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
+using Host = OrpiLibrary.Models.Host;
 using Microsoft.AspNetCore.Mvc;
 
 namespace infrastructure_service.Controllers;
@@ -19,21 +20,21 @@ public class HostController : Controller
     
     [HttpGet]
     [Route("get_host")]
-    public async Task<Models.Host> Get(long id)
+    public async Task<Host> Get(long id)
     {
         return await _hostRepository.Get(id);
     }
     
     [HttpGet]
     [Route("get_all_for_infrastructure")]
-    public async Task<IEnumerable<Models.Host>> GetForInfrastructure(long id)
+    public async Task<IEnumerable<Host>> GetForInfrastructure(long id)
     {
         return await _hostRepository.GetAllForInfrastructure(id);
     }
     
     [HttpPost]
     [Route("create_host")]
-    public async Task<long> Create(Models.Host host)
+    public async Task<long> Create(Host host)
     {
         return await _hostRepository.Create(host);
     }
@@ -49,7 +50,7 @@ public class HostController : Controller
     
     [HttpPut]
     [Route("update_host")]
-    public async Task<bool> Update(Models.Host host)
+    public async Task<bool> Update(Host host)
     {
         return await _hostRepository.Update(host);
     }

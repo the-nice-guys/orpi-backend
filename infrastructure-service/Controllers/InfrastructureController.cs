@@ -1,7 +1,7 @@
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
-using Host = infrastructure_service.Models.Host;
+using Host = OrpiLibrary.Models.Host;
 
 namespace infrastructure_service.Controllers;
 
@@ -42,7 +42,7 @@ public class InfrastructureController: ControllerBase
     
     [HttpPost]
     [Route("create_infrastructure")]
-    public async Task<long> CreateInfrastructure(CreateInfrastuctureRequest request)
+    public async Task<long> CreateInfrastructure(CreateInfrastructureRequest request)
     {
         List<Host> hosts = new List<Host>();
         request.Infrastructure.Hosts?.ForEach(async host =>

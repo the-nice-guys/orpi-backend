@@ -1,4 +1,4 @@
-namespace infrastructure_service.Models;
+namespace OrpiLibrary.Models;
 
 public enum Status
 {

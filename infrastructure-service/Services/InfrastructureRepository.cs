@@ -1,9 +1,9 @@
 using System.Text.Json;
 using Dapper;
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 using Npgsql;
-using Host = infrastructure_service.Models.Host;
+using Host = OrpiLibrary.Models.Host;
 
 namespace infrastructure_service.Services;
 
@@ -77,7 +77,8 @@ public class InfrastructureRepository: IInfrastructureRepository
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var command = new NpgsqlCommand("select id, name, description, icon, h5 as hosts from infrastructures i join (select ih.infrastructure_id as id, array_to_json(array_agg(h)) as h5 from infrastructure_host as ih join (select hs.host_id as host_id, h3.name, h3.description, h3.icon, h3.ip, array_agg(s) as services from host_service as hs join hosts h3 on hs.host_id = h3.id join services s on hs.service_id = s.id group by h3.description, h3.name, hs.host_id, h3.icon, h3.ip) as h using (host_id) group by ih.infrastructure_id) as t using (id) where i.id = @id;", connection);
+        //await using var command = new NpgsqlCommand("select id, name, description, icon, h5 as hosts from infrastructures i join (select ih.infrastructure_id as id, array_to_json(array_agg(h)) as h5 from infrastructure_host as ih join (select hs.host_id as host_id, h3.name, h3.description, h3.icon, h3.ip, array_agg(s) as services from host_service as hs join hosts h3 on hs.host_id = h3.id join services s on hs.service_id = s.id group by h3.description, h3.name, hs.host_id, h3.icon, h3.ip) as h using (host_id) group by ih.infrastructure_id) as t using (id) where i.id = @id;", connection);
+        await using var command = new NpgsqlCommand("select * from infrastructures i left join (select ih.infrastructure_id as id, array_to_json(array_agg(h)) as hosts from infrastructure_host as ih left join (select hs.host_id as host_id, h3.name, h3.description, h3.icon, h3.ip, array_agg(s) as services from host_service as hs left join hosts h3 on hs.host_id = h3.id left join (select so.service_id as service_id, s2.name, s2.description, s2.\"lastUpdated\", s2.dependencies, array_agg(o) as options from service_options as so left join options o on so.option_id = o.id left join services s2 on so.service_id = s2.id group by s2.name, so.service_id, s2.description, s2.\"lastUpdated\", s2.dependencies) as s using (service_id) group by h3.description, h3.name, hs.host_id, h3.icon, h3.ip) as h using (host_id) group by ih.infrastructure_id) as t using (id) where i.id = @id;", connection);
         var queryParameters = new
         {
             id = id
@@ -93,6 +94,13 @@ public class InfrastructureRepository: IInfrastructureRepository
             Icon = result?["icon"] as string,
             Hosts = JsonSerializer.Deserialize<List<Host>>(result?["hosts"] as string ?? string.Empty)
         };
+        foreach (var host in infrastructure.Hosts)
+        {
+            foreach (var service in host.Services)
+            {
+                service.Ip = host.Ip;
+            }
+        }
         return infrastructure;
     }
 

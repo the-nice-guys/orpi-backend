@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace infrastructure_service.Models;
+namespace OrpiLibrary.Models;
 
 public class Host
 {

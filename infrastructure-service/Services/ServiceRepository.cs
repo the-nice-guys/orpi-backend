@@ -1,6 +1,6 @@
 using Dapper;
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 using Npgsql;
 
 namespace infrastructure_service.Services;

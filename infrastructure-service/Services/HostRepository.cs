@@ -1,9 +1,9 @@
 using System.Text.Json;
 using Dapper;
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 using Npgsql;
-using Host = infrastructure_service.Models.Host;
+using Host = OrpiLibrary.Models.Host;
 
 namespace infrastructure_service.Services;
 

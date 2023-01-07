@@ -1,4 +1,4 @@
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 
 namespace infrastructure_service.Interfaces;
 

@@ -1,0 +1,10 @@
+insert into public.infrastructures (id, name, description, icon) values (3, 'name', 'desc', 'mdi-cloud-check-outline');
+insert into public.infrastructures (id, name, description, icon) values (4, 'test2', 'test2', 'mdi-cloud-check-outline');
+insert into public.infrastructures (id, name, description, icon) values (5, 'test-infrastructure', 'test-inf-desc', 'mdi-cloud');
+insert into public.infrastructures (id, name, description, icon) values (6, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (7, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (8, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (9, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (10, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (11, 'test', 'test', null);
+insert into public.infrastructures (id, name, description, icon) values (12, 'test', 'test', null);

@@ -1,5 +1,5 @@
 using infrastructure_service.Interfaces;
-using infrastructure_service.Models;
+using OrpiLibrary.Models;
 using infrastructure_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
