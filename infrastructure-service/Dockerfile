@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 44392
@@ -9,12 +9,12 @@ WORKDIR /src
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY infrastructure-service/*.csproj ./infrastructure-service/
-COPY OrpyLibrary/*.csproj ./OrpyLibrary/
+COPY OrpiLibrary/*.csproj ./OrpiLibrary/
 RUN dotnet restore ./infrastructure-service/infrastructure-service.csproj
 
 # copy everything else and build app
-COPY nfrastructure-service/. ./infrastructure-service/
-COPY OrpyLibrary/. ./OrpyLibrary/
+COPY infrastructure-service/. ./infrastructure-service/
+COPY OrpiLibrary/. ./OrpiLibrary/
 WORKDIR /src/infrastructure-service
 RUN dotnet publish -c Release -o /app/build-dll
 
