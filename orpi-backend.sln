@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure-service", "i
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "coordinator-service", "coordinator-service\coordinator-service.csproj", "{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerModule", "DockerModule\DockerModule.csproj", "{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
