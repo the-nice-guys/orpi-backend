@@ -53,6 +53,7 @@ services:
     depends_on:
       auth-service-database:
         condition: service_healthy
+
   auth-service-database:
     image: postgres:14.4
     container_name: auth-service-database
@@ -60,9 +61,9 @@ services:
       - POSTGRES_USER=auth_service
       - POSTGRES_PASSWORD=authpass
       - POSTGRES_DB=orpi
-      - PGPORT=5432
+      - PGPORT=5431
     ports:
-      - 5432:5432
+      - 5431:5431
     healthcheck:
       test: "exit 0"
     # volumes: 

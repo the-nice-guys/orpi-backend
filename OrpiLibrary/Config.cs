@@ -14,7 +14,7 @@ namespace OrpiLibrary {
         #else
             public const string AuthenticationServiceDatabaseHost = "auth-service-database";
         #endif
-        public const int AuthenticationServiceDatabasePort = 5432;
+        public const int AuthenticationServiceDatabasePort = 5431;
         public const string AuthenticationServiceDatabaseName = "orpi";
         public const string AuthenticationServiceDatabaseUser = "auth_service";
         public const string AuthenticationServiceDatabasePassword = "authpass";
