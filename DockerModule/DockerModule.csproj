@@ -6,4 +6,13 @@
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Confluent.Kafka" Version="2.0.2" />
+      <PackageReference Include="Docker.DotNet" Version="3.125.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OrpiLibrary\OrpiLibrary.csproj" />
+    </ItemGroup>
+
 </Project>
