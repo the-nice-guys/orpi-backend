@@ -98,26 +98,25 @@ namespace DockerModule.Services {
         }
 
         #region SetParameterValue
-
-        // TODO: fix
+        
         private static void SetParameter<TParameters>(PropertyInfo? property, TParameters parameters, Option option) {
-            if (option.Type == typeof(bool))
+            if (option.Type == typeof(bool).ToString())
                 DeserializeAndSetValue<bool, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(string))
+            else if (option.Type == typeof(string).ToString())
                 DeserializeAndSetValue<string, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(TimeSpan?))
+            else if (option.Type == typeof(TimeSpan?).ToString())
                 DeserializeAndSetValue<TimeSpan?, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(HostConfig))
+            else if (option.Type == typeof(HostConfig).ToString())
                 DeserializeAndSetValue<HostConfig, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(HealthConfig))
+            else if (option.Type == typeof(HealthConfig).ToString())
                 DeserializeAndSetValue<HealthConfig, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(NetworkingConfig))
+            else if (option.Type == typeof(NetworkingConfig).ToString())
                 DeserializeAndSetValue<NetworkingConfig, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(IList<string>))
+            else if (option.Type == typeof(IList<string>).ToString())
                 DeserializeAndSetValue<IList<string>, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(IDictionary<string, string>)) 
+            else if (option.Type == typeof(IDictionary<string, string>).ToString()) 
                 DeserializeAndSetValue<IDictionary<string, string>, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(IDictionary<string, EmptyStruct>)) 
+            else if (option.Type == typeof(IDictionary<string, EmptyStruct>).ToString()) 
                 DeserializeAndSetValue<IDictionary<string, EmptyStruct>, TParameters>(property, parameters, option.Value);
         }
         
