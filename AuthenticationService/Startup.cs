@@ -1,13 +1,13 @@
 using AuthenticationService.Interfaces;
 using AuthenticationService.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Hosting;
 using OrpiLibrary;
-using OrpiLibrary.Models;
-using OrpiLibrary.Interfaces;
+using OrpiLibrary.Interfaces.Tokens;
+using OrpiLibrary.Models.Common.Tokens;
 
 namespace AuthenticationService {
     public class Startup {

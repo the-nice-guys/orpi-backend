@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace OrpiLibrary.Models {
+namespace OrpiLibrary.Models.Common.Tokens {
     public abstract class TokenData {
         public string Issuer { get; }
         public string Audience { get; }

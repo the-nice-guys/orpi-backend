@@ -1,6 +1,6 @@
-using OrpiLibrary.Models;
+using OrpiLibrary.Models.Common.Tokens;
 
-namespace OrpiLibrary.Interfaces {
+namespace OrpiLibrary.Interfaces.Tokens {
     public interface ITokenLifeTimeManager {
         public double GetTimeBeforeExpiration(string token, TokenData data);
     }

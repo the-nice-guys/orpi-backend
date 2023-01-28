@@ -8,8 +8,8 @@ using AuthenticationService.Models;
 using AuthenticationService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrpiLibrary.Interfaces;
 using OrpiLibrary;
+using OrpiLibrary.Interfaces.Tokens;
 
 namespace AuthenticationService.Controllers {
     [ApiController]

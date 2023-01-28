@@ -26,7 +26,7 @@ namespace AuthenticationService.Extensions {
         }
 
         private static void CreateTable(string schema, NpgsqlConnection connection) {
-            string request = File.ReadAllText(schema);
+            var request = File.ReadAllText(schema);
             new NpgsqlCommand(request, connection).ExecuteNonQuery();
         }
     }

@@ -4,8 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using OrpiLibrary.Interfaces;
-using OrpiLibrary.Models;
+using OrpiLibrary.Interfaces.Tokens;
+using OrpiLibrary.Models.Common.Tokens;
 
 namespace AuthenticationService.Services {
     public class TokenCreator: ITokenCreator {
