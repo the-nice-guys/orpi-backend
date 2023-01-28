@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrpiLibrary", "OrpiLibrary\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{CDE34E61-13E1-42A9-A814-76782710C94B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure-service", "infrastructure-service\infrastructure-service.csproj", "{449DECC1-45B3-4D33-B433-7265CAD7D3AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService", "InfrastructureService\InfrastructureService.csproj", "{449DECC1-45B3-4D33-B433-7265CAD7D3AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "coordinator-service", "coordinator-service\coordinator-service.csproj", "{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinatorService", "CoordinatorService\CoordinatorService.csproj", "{2EFF78A3-DA7A-4418-9BF4-BEC59178520C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerModule", "DockerModule\DockerModule.csproj", "{53ADB82F-93EC-46D3-B5EB-C4761C31D0A3}"
 EndProject

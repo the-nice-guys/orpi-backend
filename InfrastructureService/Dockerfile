@@ -8,14 +8,14 @@ WORKDIR /src
 
 # copy csproj and restore as distinct layers
 COPY *.sln .
-COPY infrastructure-service/*.csproj ./infrastructure-service/
+COPY InfrastructureService/*.csproj ./InfrastructureService/
 COPY OrpiLibrary/*.csproj ./OrpiLibrary/
-RUN dotnet restore ./infrastructure-service/infrastructure-service.csproj
+RUN dotnet restore ./InfrastructureService/InfrastructureService.csproj
 
 # copy everything else and build app
-COPY infrastructure-service/. ./infrastructure-service/
+COPY InfrastructureService/. ./InfrastructureService/
 COPY OrpiLibrary/. ./OrpiLibrary/
-WORKDIR /src/infrastructure-service
+WORKDIR /src/InfrastructureService
 RUN dotnet publish -c Release -o /app/build-dll
 
 FROM build AS publish
@@ -24,4 +24,4 @@ RUN dotnet publish -c Release -o /app/build-dll
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/build-dll .
-ENTRYPOINT ["dotnet", "infrastructure-service.dll"]
+ENTRYPOINT ["dotnet", "InfrastructureService.dll"]
