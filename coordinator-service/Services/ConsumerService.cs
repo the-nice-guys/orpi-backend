@@ -2,6 +2,8 @@ using System.Text.Json;
 using Confluent.Kafka;
 using coordinator_service.Models;
 using Microsoft.Extensions.Caching.Distributed;
+using OrpiLibrary.Models.Common;
+using OrpiLibrary.Models.Docker.Enums;
 
 namespace coordinator_service.Services;
 
@@ -34,8 +36,9 @@ public class ConsumerService: IHostedService
         {
             var consumeResult = consumer.Consume(cancellationToken);
             Console.WriteLine($"Consumed message from '{topic}' '{consumeResult.Message.Value}' at: '{consumeResult.TopicPartitionOffset}'.");
-            DeploymentResponse response = JsonSerializer.Deserialize<DeploymentResponse>(consumeResult.Message.Value);
-            await _cache.SetStringAsync(response.ServiceId.ToString(), response.Result);
+            Response<DockerResponseType> response = JsonSerializer.Deserialize<Response<DockerResponseType>>(consumeResult.Message.Value);
+            
+            //await _cache.SetStringAsync(response.ServiceId.ToString(), response.Result);
         }
     }
 

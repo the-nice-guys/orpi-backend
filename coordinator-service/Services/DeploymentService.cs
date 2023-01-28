@@ -3,6 +3,8 @@ using coordinator_service.Interfaces;
 using coordinator_service.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using OrpiLibrary.Models;
+using OrpiLibrary.Models.Common;
+using OrpiLibrary.Models.Docker.Enums;
 
 namespace coordinator_service.Services;
 
@@ -58,13 +60,13 @@ public class DeploymentService: IDeploymentService
                 return;
             }
             
-            DeploymentRequest request = new()
+            Request<DockerRequestType> request = new()
             {
-                Type = "deploy",
-                Service = service,
-                Uuid = Guid.NewGuid().ToString()
+                Type = DockerRequestType.Create,
+                Guid = Guid.NewGuid(),
+                Payload = JsonSerializer.Serialize(service)
             };
-            
+
             await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(service.Id.ToString(), "deploy in progress");
 
@@ -95,13 +97,13 @@ public class DeploymentService: IDeploymentService
     {
         foreach (var service in servicesQueue)
         {
-            DeploymentRequest request = new()
+            Request<DockerRequestType> request = new()
             {
-                Type = "rollback",
-                Service = service,
-                Uuid = Guid.NewGuid().ToString()
+                Type = DockerRequestType.Delete,
+                Guid = Guid.NewGuid(),
+                Payload = JsonSerializer.Serialize(service)
             };
-            
+
             //await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(service.Id.ToString(), "rollback in progress");
         }
