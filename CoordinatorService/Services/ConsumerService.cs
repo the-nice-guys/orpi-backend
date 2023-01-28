@@ -36,7 +36,18 @@ public class ConsumerService: IHostedService
         {
             var consumeResult = consumer.Consume(cancellationToken);
             Console.WriteLine($"Consumed message from '{topic}' '{consumeResult.Message.Value}' at: '{consumeResult.TopicPartitionOffset}'.");
-            Response<DockerResponseType> response = JsonSerializer.Deserialize<Response<DockerResponseType>>(consumeResult.Message.Value);
+            Response<DockerResponse> response = JsonSerializer.Deserialize<Response<DockerResponse>>(consumeResult.Message.Value);
+
+            switch (response.Result)
+            {
+                case DockerResponse.Ok:
+                    await _cache.SetStringAsync(response.Guid.ToString(), DockerResponse.Ok.ToString());
+                    // await _cache.SetStringAsync(response.Guid.ToString() + "-message", response.Message);
+                    break;
+                case DockerResponse.Failed:
+                    await _cache.SetStringAsync(response.Guid.ToString(), DockerResponse.Failed.ToString());
+                    break;
+            }
             
             //await _cache.SetStringAsync(response.ServiceId.ToString(), response.Result);
         }

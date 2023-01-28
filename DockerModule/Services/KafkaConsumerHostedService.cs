@@ -32,24 +32,24 @@ namespace DockerModule.Services {
             consumer.Subscribe(Topic);
             while (!cancellationToken.IsCancellationRequested) {
                 var message = consumer.Consume(cancellationToken).Message.Value;
-                var request = JsonSerializer.Deserialize<Request<DockerRequestType>>(message);
+                var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);
                 if (request is null) {
-                    Responder.SendResponse(DockerResponseType.Failed, "Failed to parse request.");
+                    Responder.SendResponse(DockerResponse.Failed, "Failed to parse request.");
                     continue;
                 }
                 
                 var service = JsonSerializer.Deserialize<Service>(request.Payload);
                 if (service is null) {
-                    Responder.SendResponse(DockerResponseType.Failed, "Failed to get service parameters.");
+                    Responder.SendResponse(DockerResponse.Failed, "Failed to get service parameters.");
                     continue;
                 }
                 
                 await (request.Type switch {
-                    DockerRequestType.Create => ServiceManager.CreateService(service, Responder),
-                    DockerRequestType.Start => ServiceManager.StartService(service, Responder),
-                    DockerRequestType.Stop => ServiceManager.StopService(service, Responder),
-                    DockerRequestType.Restart => ServiceManager.RestartService(service, Responder),
-                    DockerRequestType.Delete => ServiceManager.DeleteService(service, Responder),
+                    DockerRequest.CreateContainer => ServiceManager.CreateService(service, Responder),
+                    DockerRequest.StartContainer => ServiceManager.StartService(service, Responder),
+                    DockerRequest.StopContainer => ServiceManager.StopService(service, Responder),
+                    DockerRequest.RestartContainer => ServiceManager.RestartService(service, Responder),
+                    DockerRequest.DeleteContainer => ServiceManager.DeleteService(service, Responder),
 
                     _ => Task.CompletedTask
                 });

@@ -35,7 +35,7 @@ public class DeploymentService: IDeploymentService
         try
         {
             await Task.WhenAll(tasks);
-            await ClearCacheAsync(queues);
+            // await ClearCacheAsync(queues);
             return true;
         }
         catch (OperationCanceledException e)
@@ -46,6 +46,7 @@ public class DeploymentService: IDeploymentService
         {
             Console.WriteLine(e);
             //cancellationTokenSource.Cancel(false);
+            // TODO: Rollback
         }
         return false;
     }
@@ -60,27 +61,31 @@ public class DeploymentService: IDeploymentService
                 return;
             }
             
-            Request<DockerRequestType> request = new()
+            Request<DockerRequest> request = new()
             {
-                Type = DockerRequestType.Create,
+                Type = DockerRequest.CreateContainer,
                 Guid = Guid.NewGuid(),
                 Payload = JsonSerializer.Serialize(service)
             };
 
             await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
-            await _cache.SetStringAsync(service.Id.ToString(), "deploy in progress");
+            await _cache.SetStringAsync(request.Guid.ToString(), "deploy in progress", new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            });
 
             bool isDeployed = false;
             while (!cts.IsCancellationRequested)
             {
+                Console.WriteLine($"Waiting deployment of {service.Id}");
                 await Task.Delay(1000);
-                var status = await _cache.GetStringAsync(service.Id.ToString());
+                var status = await _cache.GetStringAsync(request.Guid.ToString());
                 switch (status)
                 {
-                    case "deployed":
+                    case "Ok":
                         isDeployed = true;
                         break;
-                    case "failed":
+                    case "Failed":
                         cts.Cancel(false);
                         throw new Exception($"Deployment of service {service.Id} failed");
                 }
@@ -97,15 +102,15 @@ public class DeploymentService: IDeploymentService
     {
         foreach (var service in servicesQueue)
         {
-            Request<DockerRequestType> request = new()
+            Request<DockerRequest> request = new()
             {
-                Type = DockerRequestType.Delete,
+                Type = DockerRequest.DeleteContainer,
                 Guid = Guid.NewGuid(),
                 Payload = JsonSerializer.Serialize(service)
             };
 
             //await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
-            await _cache.SetStringAsync(service.Id.ToString(), "rollback in progress");
+            await _cache.SetStringAsync(request.Guid.ToString(), "rollback in progress");
         }
     }
     

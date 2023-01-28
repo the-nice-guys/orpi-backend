@@ -6,10 +6,10 @@ using OrpiLibrary.Models.Docker.Enums;
 namespace DockerModule.Services {
     [UsedImplicitly]
     public class KafkaResponder : IResponder {
-        public void SendResponse(DockerResponseType response, string? message) { 
+        public void SendResponse(DockerResponse response, string? message) { 
             Console.ForegroundColor = response switch {
-                DockerResponseType.Ok => ConsoleColor.Green,
-                DockerResponseType.Failed => ConsoleColor.Red,
+                DockerResponse.Ok => ConsoleColor.Green,
+                DockerResponse.Failed => ConsoleColor.Red,
                 
                 _ => ConsoleColor.White
             }; 

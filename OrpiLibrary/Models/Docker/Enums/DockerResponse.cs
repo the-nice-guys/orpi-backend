@@ -1,5 +1,5 @@
 namespace OrpiLibrary.Models.Docker.Enums {
-    public enum DockerResponseType {
+    public enum DockerResponse {
         Ok,
         Failed,
     }

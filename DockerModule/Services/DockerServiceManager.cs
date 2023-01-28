@@ -18,7 +18,7 @@ namespace DockerModule.Services {
             var parameters = new CreateContainerParameters();
             SetParameters(parameters, service.Options);
             var response = await client.Containers.CreateContainerAsync(parameters);
-            responder.SendResponse(DockerResponseType.Ok, $"Container with id {response.ID} created");
+            responder.SendResponse(DockerResponse.Ok, $"Container with id {response.ID} created");
         }
 
         #region StartService
@@ -29,9 +29,9 @@ namespace DockerModule.Services {
             SetParameters(parameters, service.Options);
             var success = await client.Containers.StartContainerAsync(service.Name, parameters);
             if (success)
-                responder.SendResponse(DockerResponseType.Ok, $"Successfully started container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Ok, $"Successfully started container with name {service.Name}");
             else 
-                responder.SendResponse(DockerResponseType.Failed, $"Failed to start container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Failed, $"Failed to start container with name {service.Name}");
         }
         
         #endregion
@@ -44,9 +44,9 @@ namespace DockerModule.Services {
             SetParameters(parameters, service.Options);
             var success = await client.Containers.StopContainerAsync(service.Name, parameters);
             if (success)
-                responder.SendResponse(DockerResponseType.Ok, $"Successfully stopped container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
             else 
-                responder.SendResponse(DockerResponseType.Failed, $"Failed to stop container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Failed, $"Failed to stop container with name {service.Name}");
         }
         
         #endregion
@@ -60,10 +60,10 @@ namespace DockerModule.Services {
             try {
                 await client.Containers.RestartContainerAsync(service.Name, parameters);
             } catch {
-                responder.SendResponse(DockerResponseType.Failed, $"Failed to stop container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Failed, $"Failed to stop container with name {service.Name}");
             }
             
-            responder.SendResponse(DockerResponseType.Ok, $"Successfully stopped container with name {service.Name}");
+            responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
         }
         
         #endregion
@@ -77,10 +77,10 @@ namespace DockerModule.Services {
             try {
                 await client.Containers.RemoveContainerAsync(service.Name, parameters);
             } catch {
-                responder.SendResponse(DockerResponseType.Failed, $"Failed to remove container with name {service.Name}");
+                responder.SendResponse(DockerResponse.Failed, $"Failed to remove container with name {service.Name}");
             }
             
-            responder.SendResponse(DockerResponseType.Ok, $"Successfully stopped container with name {service.Name}");
+            responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
         }
         
         #endregion
@@ -99,6 +99,7 @@ namespace DockerModule.Services {
 
         #region SetParameterValue
 
+        // TODO: fix
         private static void SetParameter<TParameters>(PropertyInfo? property, TParameters parameters, Option option) {
             if (option.Type == typeof(bool))
                 DeserializeAndSetValue<bool, TParameters>(property, parameters, option.Value);
