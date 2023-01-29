@@ -4,7 +4,7 @@ services:
   infrastructure-service:
     build:
       context: .
-      dockerfile: ./infrastructure-service/Dockerfile
+      dockerfile: InfrastructureService/Dockerfile
     container_name: infrastructure-service
     ports:
       - "5175:80"
@@ -16,7 +16,7 @@ services:
 
   infrastructure-service-db:
     image: postgres:latest
-    container_name: infrastructure-service-db-1
+    container_name: infrastructure-service-db
     ports:
       - "5432:5432"
     environment:
