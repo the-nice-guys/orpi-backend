@@ -1,6 +1,6 @@
-namespace OrpiLibrary.Models.Docker.Enums {
-    public enum DockerResponse {
-        Ok,
-        Failed,
-    }
+namespace OrpiLibrary.Models.Docker.Enums;
+
+public enum DockerResponse {
+    Ok,
+    Failed,
 }

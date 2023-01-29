@@ -60,13 +60,11 @@ public class DeploymentService: IDeploymentService
                 Console.WriteLine("Cancellation requested");
                 return;
             }
-            
-            Request<DockerRequest> request = new()
-            {
-                Type = DockerRequest.CreateContainer,
-                Guid = Guid.NewGuid(),
-                Payload = JsonSerializer.Serialize(service)
-            };
+
+            Request<DockerRequest> request = new(
+                Guid.NewGuid(),
+                DockerRequest.CreateContainer,
+                JsonSerializer.Serialize(service));
 
             await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(request.Guid.ToString(), "deploy in progress", new DistributedCacheEntryOptions()
@@ -100,16 +98,13 @@ public class DeploymentService: IDeploymentService
     
     public async Task RollbackDeploymentAsync(IEnumerable<Service> servicesQueue)
     {
-        foreach (var service in servicesQueue)
-        {
-            Request<DockerRequest> request = new()
-            {
-                Type = DockerRequest.DeleteContainer,
-                Guid = Guid.NewGuid(),
-                Payload = JsonSerializer.Serialize(service)
-            };
+        foreach (var service in servicesQueue) {
+            Request<DockerRequest> request = new(
+                Guid.NewGuid(),
+                DockerRequest.DeleteContainer,
+                JsonSerializer.Serialize(service));
 
-            //await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
+                //await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(request.Guid.ToString(), "rollback in progress");
         }
     }

@@ -2,8 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace OrpiLibrary.Models;
 
-public class Infrastructure
-{
+public class Infrastructure {
     [JsonPropertyName("infrastructure_id")]
     public long Id { get; set; }
     [JsonPropertyName("name")]

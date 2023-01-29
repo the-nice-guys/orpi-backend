@@ -2,12 +2,12 @@ using System;
 using System.Threading.Tasks;
 using OrpiLibrary.Models;
 
-namespace DockerModule.Interfaces {
-    public interface IServiceManager {
-        public Task CreateService(Service service, Guid requestId, IResponder responder);
-        public Task StartService(Service service, Guid requestId, IResponder responder);
-        public Task StopService(Service service, Guid requestId, IResponder responder);
-        public Task RestartService(Service service, Guid requestId, IResponder responder);
-        public Task DeleteService(Service service, Guid requestId, IResponder responder);
-    }
+namespace DockerModule.Interfaces;
+
+public interface IServiceManager {
+    public Task CreateService(Service service, Guid requestId, IResponder responder);
+    public Task StartService(Service service, Guid requestId, IResponder responder);
+    public Task StopService(Service service, Guid requestId, IResponder responder);
+    public Task RestartService(Service service, Guid requestId, IResponder responder);
+    public Task DeleteService(Service service, Guid requestId, IResponder responder);
 }
