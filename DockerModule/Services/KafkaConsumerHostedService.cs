@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,23 +34,29 @@ namespace DockerModule.Services {
             while (!cancellationToken.IsCancellationRequested) {
                 var message = consumer.Consume(cancellationToken).Message.Value;
                 var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);
-                if (request is null) {
-                    Responder.SendResponse(DockerResponse.Failed, "Failed to parse request.");
+                if (request is null) 
                     continue;
-                }
-                
+
+                Console.WriteLine("state");
+                Console.WriteLine(request.Payload);
+                Console.ReadLine();
                 var service = JsonSerializer.Deserialize<Service>(request.Payload);
                 if (service is null) {
-                    Responder.SendResponse(DockerResponse.Failed, "Failed to get service parameters.");
+                    Responder.SendResponse(new Response<DockerResponse> {
+                        Guid = request.Guid,
+                        Result = DockerResponse.Failed,
+                        Message = "Failed to get service parameters."
+                    });
+                    
                     continue;
                 }
                 
                 await (request.Type switch {
-                    DockerRequest.CreateContainer => ServiceManager.CreateService(service, Responder),
-                    DockerRequest.StartContainer => ServiceManager.StartService(service, Responder),
-                    DockerRequest.StopContainer => ServiceManager.StopService(service, Responder),
-                    DockerRequest.RestartContainer => ServiceManager.RestartService(service, Responder),
-                    DockerRequest.DeleteContainer => ServiceManager.DeleteService(service, Responder),
+                    DockerRequest.CreateContainer => ServiceManager.CreateService(service, request.Guid, Responder),
+                    DockerRequest.StartContainer => ServiceManager.StartService(service, request.Guid, Responder),
+                    DockerRequest.StopContainer => ServiceManager.StopService(service, request.Guid, Responder),
+                    DockerRequest.RestartContainer => ServiceManager.RestartService(service, request.Guid, Responder),
+                    DockerRequest.DeleteContainer => ServiceManager.DeleteService(service, request.Guid, Responder),
 
                     _ => Task.CompletedTask
                 });

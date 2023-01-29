@@ -8,79 +8,119 @@ using Docker.DotNet.Models;
 using DockerModule.Interfaces;
 using JetBrains.Annotations;
 using OrpiLibrary.Models;
+using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
 
 namespace DockerModule.Services {
     [UsedImplicitly]
     public class DockerServiceManager : IServiceManager {
-        public async Task CreateService(Service service, IResponder responder) {
+        public async Task CreateService(Service service, Guid requestId, IResponder responder) {
             var client = GetServiceClient(service);
             var parameters = new CreateContainerParameters();
-            SetParameters(parameters, service.Options);
-            var response = await client.Containers.CreateContainerAsync(parameters);
-            responder.SendResponse(DockerResponse.Ok, $"Container with id {response.ID} created");
+            var message = "Successfully created container.";
+            var result = DockerResponse.Ok;
+
+            try {
+                // SetParameters(parameters, service.Options);
+                Console.WriteLine("Image");
+                Console.WriteLine(parameters.Image);
+                Console.WriteLine("Name");
+                Console.WriteLine(parameters.Name);
+                await client.Containers.CreateContainerAsync(parameters);
+            } catch (Exception exception) {
+                message = $"Failed to create container with name {service.Name}: {exception.Message}";
+                result = DockerResponse.Failed;
+            }
+
+            responder.SendResponse(CreateResponse(requestId, result, message));
         }
 
         #region StartService
         
-        public async Task StartService(Service service, IResponder responder) {
+        public async Task StartService(Service service, Guid requestId, IResponder responder) {
             var client = GetServiceClient(service);
             var parameters = new ContainerStartParameters();
-            SetParameters(parameters, service.Options);
-            var success = await client.Containers.StartContainerAsync(service.Name, parameters);
-            if (success)
-                responder.SendResponse(DockerResponse.Ok, $"Successfully started container with name {service.Name}");
-            else 
-                responder.SendResponse(DockerResponse.Failed, $"Failed to start container with name {service.Name}");
+            string message;
+            DockerResponse result;
+
+            try {
+                SetParameters(parameters, service.Options);
+                var success = await client.Containers.StartContainerAsync(service.Name, parameters);
+                message = success ? $"Successfully started container with name {service.Name}." : 
+                    $"Failed to start container with name {service.Name}.";
+                result = success ? DockerResponse.Ok : DockerResponse.Failed;
+            } catch (Exception exception) {
+                message = $"Failed to start container with name {service.Name}: {exception.Message}";
+                result = DockerResponse.Ok;
+            }
+            
+            responder.SendResponse(CreateResponse(requestId, result, message));
         }
         
         #endregion
         
         #region StopService
         
-        public async Task StopService(Service service, IResponder responder) {
+        public async Task StopService(Service service, Guid requestId, IResponder responder) {
             var client = GetServiceClient(service);
             var parameters = new ContainerStopParameters();
-            SetParameters(parameters, service.Options);
-            var success = await client.Containers.StopContainerAsync(service.Name, parameters);
-            if (success)
-                responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
-            else 
-                responder.SendResponse(DockerResponse.Failed, $"Failed to stop container with name {service.Name}");
+            string message;
+            DockerResponse result;
+            
+            try {
+                SetParameters(parameters, service.Options);
+                var success = await client.Containers.StopContainerAsync(service.Name, parameters);
+                message = success ? $"Successfully stopped container with name {service.Name}." : 
+                    $"Failed to stop container with name {service.Name}.";
+                result = success ? DockerResponse.Ok : DockerResponse.Failed;
+            } catch (Exception exception) {
+                message = $"Failed to stop container with name {service.Name}: {exception.Message}";
+                result = DockerResponse.Ok;
+            }
+            
+            responder.SendResponse(CreateResponse(requestId, result, message));
         }
         
         #endregion
         
         #region RestartService
         
-        public async Task RestartService(Service service, IResponder responder) {
+        public async Task RestartService(Service service, Guid requestId, IResponder responder) {
             var client = GetServiceClient(service);
             var parameters = new ContainerRestartParameters();
-            SetParameters(parameters, service.Options);
+            var message = $"Successfully restarted container with name {service.Name}.";
+            var result = DockerResponse.Ok;
+            
             try {
+                SetParameters(parameters, service.Options);
                 await client.Containers.RestartContainerAsync(service.Name, parameters);
-            } catch {
-                responder.SendResponse(DockerResponse.Failed, $"Failed to stop container with name {service.Name}");
+            } catch (Exception exception) {
+                result = DockerResponse.Failed;
+                message = $"Failed to restart container with name {service.Name}: {exception.Message}";
             }
             
-            responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
+            responder.SendResponse(CreateResponse(requestId, result, message));
         }
         
         #endregion
 
         #region DeleteService
 
-        public async Task DeleteService(Service service, IResponder responder) {
+        public async Task DeleteService(Service service, Guid requestId, IResponder responder) {
             var client = GetServiceClient(service);
             var parameters = new ContainerRemoveParameters();
-            SetParameters(parameters, service.Options);
+            var message = $"Successfully deleted container with name {service.Name}.";
+            var result = DockerResponse.Ok;
+            
             try {
+                SetParameters(parameters, service.Options);
                 await client.Containers.RemoveContainerAsync(service.Name, parameters);
-            } catch {
-                responder.SendResponse(DockerResponse.Failed, $"Failed to remove container with name {service.Name}");
+            } catch (Exception exception) {
+                result = DockerResponse.Failed;
+                message = $"Failed to delete container with name {service.Name}: {exception.Message}";
             }
             
-            responder.SendResponse(DockerResponse.Ok, $"Successfully stopped container with name {service.Name}");
+            responder.SendResponse(CreateResponse(requestId, result, message));
         }
         
         #endregion
@@ -88,6 +128,14 @@ namespace DockerModule.Services {
         private static DockerClient GetServiceClient(Service service) {
             var uri = new Uri($"http://{service.Ip}:{DefaultDockerApiPort}");
             return new DockerClientConfiguration(uri).CreateClient();
+        }
+        
+        private static Response<DockerResponse> CreateResponse(Guid requestId, DockerResponse result, string? message) {
+            return new Response<DockerResponse> {
+                Guid = requestId,
+                Result = result,
+                Message = message
+            };
         }
 
         private static void SetParameters<TParameters>(TParameters parameters, List<Option> options) where TParameters : notnull {
@@ -102,10 +150,10 @@ namespace DockerModule.Services {
         private static void SetParameter<TParameters>(PropertyInfo? property, TParameters parameters, Option option) {
             if (option.Type == typeof(bool).ToString())
                 DeserializeAndSetValue<bool, TParameters>(property, parameters, option.Value);
+            else if (option.Type == typeof(uint).ToString())
+                DeserializeAndSetValue<uint, TParameters>(property, parameters, option.Value);
             else if (option.Type == typeof(string).ToString())
                 DeserializeAndSetValue<string, TParameters>(property, parameters, option.Value);
-            else if (option.Type == typeof(TimeSpan?).ToString())
-                DeserializeAndSetValue<TimeSpan?, TParameters>(property, parameters, option.Value);
             else if (option.Type == typeof(HostConfig).ToString())
                 DeserializeAndSetValue<HostConfig, TParameters>(property, parameters, option.Value);
             else if (option.Type == typeof(HealthConfig).ToString())
