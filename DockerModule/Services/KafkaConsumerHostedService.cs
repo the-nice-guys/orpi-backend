@@ -10,6 +10,7 @@ using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
 using Unity;
+using Config = OrpiLibrary.Config;
 
 namespace DockerModule.Services;
 
@@ -26,12 +27,12 @@ public class KafkaConsumerHostedService : IHostedService {
 
     private async void StartToConsume(CancellationToken cancellationToken) {
         var config = new ConsumerConfig {
-            GroupId = GroupId,
-            BootstrapServers = BootstrapServers,
+            GroupId = Config.KafkaRequestGroupId,
+            BootstrapServers = $"{Config.KafkaBootstrapServerHost}:{Config.KafkaBootstrapServerPort}",
         };
         
         using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
-        consumer.Subscribe(Topic);
+        consumer.Subscribe(Config.KafkaRequestTopic);
         while (!cancellationToken.IsCancellationRequested) {
             var message = consumer.Consume(cancellationToken).Message.Value;
             var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);
@@ -61,8 +62,4 @@ public class KafkaConsumerHostedService : IHostedService {
             });
         }
     }
-    
-    private const string Topic = "docker-requests";
-    private const string GroupId = "test-group";
-    private const string BootstrapServers = "localhost:9092";
 }
