@@ -13,7 +13,7 @@ public class InfrastructureRepository: IInfrastructureRepository
 
     public InfrastructureRepository(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("InfrastructureDatabase");
     }
     
     public async Task<long> Create(Infrastructure infrastructure)

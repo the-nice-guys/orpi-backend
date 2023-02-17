@@ -9,14 +9,15 @@ namespace coordinator_service.Services;
 
 public class ConsumerService: IHostedService
 {
-    private readonly string[] _topics;
+    private readonly string _topic;
     private readonly string _groupId = "test_group";
     private readonly string _bootstrapServers = "localhost:9092";
     private readonly IDistributedCache _cache;
     
-    public ConsumerService(IDistributedCache cache, params string[] topics)
+    public ConsumerService(IDistributedCache cache, string server, string topic)
     {
-        _topics = topics;
+        _topic = topic;
+        _bootstrapServers = server;
         _cache = cache;
     }
 
@@ -55,11 +56,7 @@ public class ConsumerService: IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        foreach (var topic in _topics)
-        {
-            Task.Run(() => Consume(topic, cancellationToken), cancellationToken);
-        }
-
+        Task.Run(() => Consume(_topic, cancellationToken), cancellationToken);
         return Task.CompletedTask;
     }
 

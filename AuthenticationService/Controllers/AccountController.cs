@@ -46,6 +46,7 @@ namespace AuthenticationService.Controllers {
             return Ok("Account was successfully registered.");
         }
 
+
         [HttpPost("auth")]
         public async Task<IActionResult> Authorize([FromBody] AuthorizationModel account) {
             string? password;
@@ -65,8 +66,11 @@ namespace AuthenticationService.Controllers {
                 new (ClaimsIdentity.DefaultNameClaimType, account.Login),
                 new (ClaimsIdentity.DefaultRoleClaimType, Roles.User.ToString()),
             };
+
+            var user = await _usersWorker.GetUser(account.Login);
             
             return Ok(new {
+                User = user,
                 AccessToken = _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, claims),
                 RefreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, claims),
             });

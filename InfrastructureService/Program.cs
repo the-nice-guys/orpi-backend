@@ -4,9 +4,9 @@ using infrastructure_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 string dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-string connectionString = $"host={dbHost};port=5432;database=infrastructure-service;username=postgres;password=postgres";
+//string connectionString = $"host={dbHost};port=5432;database=infrastructure-service;username=postgres;password=postgres";
 // add connection string to the configuration
-builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
+//builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 
 // Add services to the container.
 
@@ -29,6 +29,8 @@ if (app.Environment.IsDevelopment())
 }
 
 // test 2
+
+app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 
 app.UseHttpsRedirection();

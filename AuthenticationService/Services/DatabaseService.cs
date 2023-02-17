@@ -4,6 +4,7 @@ using AuthenticationService.Interfaces;
 using AuthenticationService.Models;
 using Dapper;
 using Npgsql;
+using OrpiLibrary.Models.Common;
 
 namespace AuthenticationService.Services {
     public class DatabaseService: IUsersWorker {
@@ -28,6 +29,13 @@ namespace AuthenticationService.Services {
             }
 
             return false;
+        }
+        
+        public async Task<User?> GetUser(string login) {
+            const string request = "SELECT * FROM users WHERE login = @login;";
+            await using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+            return (await connection.QueryAsync<User>(request, new {login})).FirstOrDefault();
         }
 
         public async Task<bool> CheckUserExistence(string login) {
