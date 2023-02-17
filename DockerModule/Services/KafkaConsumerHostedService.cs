@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
 using Unity;
+using Config = OrpiLibrary.Config;
 
 namespace DockerModule.Services;
 
@@ -26,12 +26,12 @@ public class KafkaConsumerHostedService : IHostedService {
 
     private async void StartToConsume(CancellationToken cancellationToken) {
         var config = new ConsumerConfig {
-            GroupId = GroupId,
-            BootstrapServers = BootstrapServers,
+            GroupId = Config.KafkaRequestGroupId,
+            BootstrapServers = $"{Config.KafkaBootstrapServerHost}:{Config.KafkaBootstrapServerPort}",
         };
         
         using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
-        consumer.Subscribe(Topic);
+        consumer.Subscribe(Config.KafkaRequestTopic);
         while (!cancellationToken.IsCancellationRequested) {
             var message = consumer.Consume(cancellationToken).Message.Value;
             var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);
@@ -39,7 +39,6 @@ public class KafkaConsumerHostedService : IHostedService {
                 continue;
             
             var service = JsonSerializer.Deserialize<Service>(request.Payload);
-            Console.WriteLine(request.Payload + "\n");
             if (service is null) {
                 Responder.SendResponse(new Response<DockerResponse>(
                     guid: request.Guid,
@@ -49,20 +48,21 @@ public class KafkaConsumerHostedService : IHostedService {
                 
                 continue;
             }
-            
-            await (request.Type switch {
+
+            var task = request.Type switch {
                 DockerRequest.CreateContainer => ServiceManager.CreateService(service, request.Guid, Responder),
                 DockerRequest.StartContainer => ServiceManager.StartService(service, request.Guid, Responder),
                 DockerRequest.StopContainer => ServiceManager.StopService(service, request.Guid, Responder),
                 DockerRequest.RestartContainer => ServiceManager.RestartService(service, request.Guid, Responder),
                 DockerRequest.DeleteContainer => ServiceManager.DeleteService(service, request.Guid, Responder),
+
+                _ => new Task(() => Responder.SendResponse(new Response<DockerResponse>(
+                    guid: request.Guid,
+                    result: DockerResponse.NotFound,
+                    message: "Unknown request type.")))
+            };
             
-                _ => Task.CompletedTask
-            });
+            task.Start();
         }
     }
-    
-    private const string Topic = "docker-requests";
-    private const string GroupId = "test-group";
-    private const string BootstrapServers = "localhost:9092";
 }
