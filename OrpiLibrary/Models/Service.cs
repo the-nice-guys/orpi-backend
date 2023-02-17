@@ -23,5 +23,5 @@ public class Service {
     public Load? DiskLoad { get; set; }
     public Load? NetworkLoad { get; set; }
     [JsonPropertyName("options")] public List<Option> Options { get; set; } = null!;
-    [JsonPropertyName("dependencies")] public List<string>? Dependencies { get; set; }
+    [JsonPropertyName("dependencies")] public string[]? Dependencies { get; set; }
 }

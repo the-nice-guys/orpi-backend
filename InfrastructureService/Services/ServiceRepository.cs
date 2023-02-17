@@ -11,7 +11,7 @@ public class ServiceRepository: IServiceRepository
     
     public ServiceRepository(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("InfrastructureDatabase");
     }
     
     public async Task<Service> Get(long id)

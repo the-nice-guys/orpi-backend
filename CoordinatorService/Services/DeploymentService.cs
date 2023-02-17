@@ -12,11 +12,13 @@ public class DeploymentService: IDeploymentService
 {
     private IDistributedCache _cache;
     private IProducerService _producerService;
+    private string _requestTopic;
     
-    public DeploymentService(IDistributedCache cache, IProducerService producerService)
+    public DeploymentService(IDistributedCache cache, IProducerService producerService, IConfiguration configuration)
     {
         _cache = cache;
         _producerService = producerService;
+        _requestTopic = configuration["Kafka:RequestTopic"];
     }
     
     public async Task<bool> DeployServicesQueuesAsync(IEnumerable<IEnumerable<Service>> servicesQueues, CancellationToken cancellationToken)
@@ -66,7 +68,7 @@ public class DeploymentService: IDeploymentService
                 DockerRequest.CreateContainer,
                 JsonSerializer.Serialize(service));
 
-            await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
+            await _producerService.Produce(_requestTopic, JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(request.Guid.ToString(), "deploy in progress", new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)

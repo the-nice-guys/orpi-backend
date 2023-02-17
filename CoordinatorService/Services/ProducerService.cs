@@ -7,11 +7,11 @@ public class ProducerService: IProducerService
 {
     private IProducer<Null, string> _producer;
 
-    public ProducerService(params string[] bootstrapServers)
+    public ProducerService(string bootstrapServers)
     {
         var config = new ProducerConfig
         {
-            BootstrapServers = "localhost:9092"//string.Join(",", bootstrapServers)
+            BootstrapServers = bootstrapServers
         };
 
         _producer = new ProducerBuilder<Null, string>(config).Build();

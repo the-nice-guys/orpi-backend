@@ -13,7 +13,7 @@ public class HostRepository: IHostRepository
     
     public HostRepository(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("InfrastructureDatabase");
     }
     
     public async Task<Host> Get(long id)
