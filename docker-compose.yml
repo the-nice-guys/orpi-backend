@@ -50,6 +50,12 @@ services:
       dockerfile: AuthenticationService/Dockerfile
     ports:
       - 7133:7133
+    environment:
+      - UserDataBase__Host=auth-service-database
+      - UserDataBase__Port=5431
+      - UserDataBase__Name=orpi
+      - UserDataBase__User=auth-service
+      - UserDataBase__Password=authpass
     depends_on:
       auth-service-database:
         condition: service_healthy
@@ -58,7 +64,7 @@ services:
     image: postgres:14.4
     container_name: auth-service-database
     environment:
-      - POSTGRES_USER=auth_service
+      - POSTGRES_USER=auth-service
       - POSTGRES_PASSWORD=authpass
       - POSTGRES_DB=orpi
       - PGPORT=5431

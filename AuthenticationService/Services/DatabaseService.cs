@@ -9,7 +9,7 @@ namespace AuthenticationService.Services {
     public class DatabaseService: IUsersWorker {
         private readonly string _connectionString;
 
-        public DatabaseService(string host, int port, string database, string user, string password) {
+        public DatabaseService(string host, string port, string database, string user, string password) {
             _connectionString = $"Host={host};Port={port};Database={database};User ID={user};Password={password}";
         }
         
