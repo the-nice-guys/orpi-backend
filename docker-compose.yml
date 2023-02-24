@@ -24,8 +24,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=infrastructure-service
     volumes:
-      - ./infrastructure-service/Schemas/base_schema.sql:/docker-entrypoint-initdb.d/000_init.sql
-      - ./infrastructure-service/Migrations:/docker-entrypoint-initdb.d/
+      - ./InfrastructureService/Schemas/base_schema.sql:/docker-entrypoint-initdb.d/000_init.sql
+      - ./InfrastructureService/Migrations:/docker-entrypoint-initdb.d/
     #- ./data:/var/lib/postgresql/data
 
   coordinator-service-cache:
