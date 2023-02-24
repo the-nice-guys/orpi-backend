@@ -21,6 +21,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new AccessTokenData().ValidationParameters;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,16 +37,12 @@ if (app.Environment.IsDevelopment())
 
 // test 2
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new RefreshTokenData().ValidationParameters;
-});
-
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

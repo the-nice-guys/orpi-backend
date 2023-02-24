@@ -93,11 +93,12 @@ public class ServiceRepository: IServiceRepository
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
-        var command = new NpgsqlCommand("INSERT INTO services (name, description) VALUES (@name, @description) RETURNING id", connection);
+        var command = new NpgsqlCommand("INSERT INTO services (name, description, dependencies) VALUES (@name, @description, @dependencies) RETURNING id", connection);
         var queryParameters = new
         {
             name = service.Name,
-            description = service.Description
+            description = service.Description,
+            dependencies = service.Dependencies
         };
         return await connection.QuerySingleAsync<long>(command.CommandText, queryParameters);
     }

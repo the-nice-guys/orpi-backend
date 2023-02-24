@@ -1,4 +1,5 @@
 using infrastructure_service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using OrpiLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Host = OrpiLibrary.Models.Host;
@@ -27,6 +28,7 @@ public class InfrastructureController: ControllerBase
     }
     
     [HttpGet]
+    [Authorize]
     [Route("get_infrastructure")]
     public async Task<Infrastructure> GetInfrastructure(long id)
     {
