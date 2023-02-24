@@ -1,6 +1,8 @@
 using infrastructure_service.Interfaces;
 using OrpiLibrary.Models;
 using infrastructure_service.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using OrpiLibrary.Models.Common.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 string dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
@@ -29,6 +31,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // test 2
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new RefreshTokenData().ValidationParameters;
+});
 
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
