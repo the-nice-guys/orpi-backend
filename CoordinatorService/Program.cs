@@ -17,6 +17,7 @@ builder.Services.AddSingleton<IHostedService, ConsumerService>(provider =>
     new ConsumerService(provider.GetService(typeof(IDistributedCache)) as IDistributedCache, builder.Configuration["Kafka:BootstrapServers"], builder.Configuration["Kafka:ResponseTopic"]));
 builder.Services.AddSingleton<IProducerService, ProducerService>(provider => new ProducerService(builder.Configuration["Kafka:BootstrapServers"]));
 builder.Services.AddSingleton<IDeploymentService, DeploymentService>();
+builder.Services.AddSingleton<IStartService, StartService>();
 
 
 builder.Services.AddControllers();

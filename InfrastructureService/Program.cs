@@ -15,6 +15,7 @@ string dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
 builder.Services.AddSingleton<IInfrastructureRepository, InfrastructureRepository>(provider => new InfrastructureRepository(builder.Configuration));
 builder.Services.AddSingleton<IHostRepository, HostRepository>(provider => new HostRepository(builder.Configuration));
 builder.Services.AddSingleton<IServiceRepository, ServiceRepository>(provider => new ServiceRepository(builder.Configuration));
+builder.Services.AddSingleton<IOptionsRepository, OptionsRepository>(provider => new OptionsRepository(builder.Configuration));
 //builder.Services.AddSingleton<IHostedService, ConsumerService>(provider => new ConsumerService((IInfrastructureRepository) provider.GetService(typeof(InfrastructureRepository)), "massages"));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

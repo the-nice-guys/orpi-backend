@@ -28,7 +28,7 @@ public class DockerServiceManager : IServiceManager {
             result = DockerResponse.Failed;
         }
 
-        responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
+        await responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
     }
 
     #region StartService
@@ -50,7 +50,7 @@ public class DockerServiceManager : IServiceManager {
             result = DockerResponse.Ok;
         }
         
-        responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
+        await responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
     }
     
     #endregion
@@ -122,7 +122,7 @@ public class DockerServiceManager : IServiceManager {
     #endregion
 
     private static DockerClient GetServiceClient(Service service) {
-        var uri = new Uri($"http://{service.Ip}:{DefaultDockerApiPort}");
+        var uri = new Uri($"http://{service.Ip}");
         return new DockerClientConfiguration(uri).CreateClient();
     }
 
