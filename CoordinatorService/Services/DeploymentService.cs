@@ -1,6 +1,7 @@
 using System.Text.Json;
 using coordinator_service.Interfaces;
 using coordinator_service.Models;
+using Docker.DotNet.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
@@ -63,6 +64,7 @@ public class DeploymentService: IDeploymentService
                 return;
             }
 
+            MakeDockerOptions(service);
             Request<DockerRequest> request = new(
                 Guid.NewGuid(),
                 DockerRequest.CreateContainer,
@@ -109,6 +111,49 @@ public class DeploymentService: IDeploymentService
                 //await _producerService.Produce("docker-requests", JsonSerializer.Serialize(request));
             await _cache.SetStringAsync(request.Guid.ToString(), "rollback in progress");
         }
+    }
+
+    private void MakeDockerOptions(Service service)
+    {
+        var options = service.Options.GroupBy(x => x.Name).ToArray();
+        service.Options.Clear();
+        foreach (var grouping in options)
+        {
+            switch (grouping.Key)
+            {
+                case "image":
+                    service.Options.Add(new Option(){Name = "Image", Type = typeof(string).ToString(), Value = JsonSerializer.Serialize(grouping.First().Value)});
+                    break;
+                case "name":
+                    service.Options.Add(new Option(){Name = "Name", Type = typeof(string).ToString(), Value = JsonSerializer.Serialize(grouping.First().Value)});
+                    break;
+                case "tty":
+                    service.Options.Add(new Option(){Name = "Tty", Type = typeof(bool).ToString(), Value = JsonSerializer.Serialize(grouping.First().Value == "true")});
+                    break;
+                case "ports":
+                    HostConfig hostConfig = new HostConfig
+                    {
+                        PortBindings = new Dictionary<string, IList<PortBinding>>()
+                    };
+
+                    IDictionary<string, EmptyStruct> exposedPorts = new Dictionary<string, EmptyStruct>();
+                    foreach (var option in grouping)
+                    {
+                        var mapping = option.Value.Split(':');
+                        if (!hostConfig.PortBindings.TryAdd(mapping[1],
+                                new List<PortBinding>() {new() {HostPort = mapping[0]}}))
+                        {
+                            hostConfig.PortBindings[mapping[1]].Add(new PortBinding() {HostPort = mapping[0]});
+                        }
+
+                        exposedPorts.TryAdd(mapping[1], new EmptyStruct());
+                    }
+                    service.Options.Add(new Option() {Name = "HostConfig", Type = hostConfig.GetType().AssemblyQualifiedName, Value = JsonSerializer.Serialize(hostConfig)});
+                    service.Options.Add(new Option() {Name = "ExposedPorts", Type = exposedPorts.GetType().AssemblyQualifiedName, Value = JsonSerializer.Serialize(exposedPorts)});
+                    break;
+            }
+        }
+        return;
     }
     
     private async Task ClearCacheAsync(IEnumerable<IEnumerable<Service>> servicesQueues)

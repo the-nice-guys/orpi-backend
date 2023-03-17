@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Confluent.Kafka;
 using DockerModule.Interfaces;
 using JetBrains.Annotations;
@@ -19,7 +20,7 @@ public class KafkaResponder : IResponder {
         _producer = new ProducerBuilder<Null, string>(config).Build();
     }
     
-    public void SendResponse(Response<DockerResponse> response) { 
+    public async Task SendResponse(Response<DockerResponse> response) { 
         Console.ForegroundColor = response.Result switch {
             DockerResponse.Ok => ConsoleColor.Green,
             DockerResponse.Failed => ConsoleColor.Red,
@@ -32,13 +33,9 @@ public class KafkaResponder : IResponder {
         Console.ForegroundColor = ConsoleColor.Black;
 
         var message = JsonSerializer.Serialize(response);
-        lock (_producer) {
-            try {
-                _producer.ProduceAsync(Config.KafkaResponseTopic, new Message<Null, string> {Value = message});
-            } catch {
-                // TODO: Add logger + check kafka producer concurrency 
-            }
-        }
+
+        await _producer.ProduceAsync(Config.KafkaResponseTopic, new Message<Null, string> {Value = message});
+        
     }
 
     private readonly IProducer<Null, string> _producer;

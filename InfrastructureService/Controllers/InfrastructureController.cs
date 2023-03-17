@@ -1,4 +1,5 @@
 using infrastructure_service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using OrpiLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Host = OrpiLibrary.Models.Host;
@@ -13,20 +14,24 @@ public class InfrastructureController: ControllerBase
     private readonly IInfrastructureRepository _infrastructureRepository;
     private readonly IHostRepository _hostRepository;
     private readonly IServiceRepository _serviceRepository;
+    private readonly IOptionsRepository _optionsRepository;
 
     public InfrastructureController(
         ILogger<InfrastructureController> logger,
         IInfrastructureRepository infrastructureRepository,
         IHostRepository hostRepository,
-        IServiceRepository serviceRepository)
+        IServiceRepository serviceRepository,
+        IOptionsRepository optionsRepository)
     {
         _logger = logger;
         _infrastructureRepository = infrastructureRepository;
         _hostRepository = hostRepository;
         _serviceRepository = serviceRepository;
+        _optionsRepository = optionsRepository;
     }
     
     [HttpGet]
+    [Authorize]
     [Route("get_infrastructure")]
     public async Task<Infrastructure> GetInfrastructure(long id)
     {
@@ -45,7 +50,8 @@ public class InfrastructureController: ControllerBase
     public async Task<long> CreateInfrastructure(CreateInfrastructureRequest request)
     {
         List<Host> hosts = new List<Host>();
-        request.Infrastructure.Hosts?.ForEach(async host =>
+        
+        foreach (var host in request.Infrastructure.Hosts)
         {
             hosts.Add(host);
             var hostId = await _hostRepository.Create(host);
@@ -55,23 +61,36 @@ public class InfrastructureController: ControllerBase
             {
                 var serviceId = await _serviceRepository.Create(hostService);
                 hostService.Id = serviceId;
+                
+                foreach (var option in hostService.Options)
+                {
+                    var optionId = await _optionsRepository.Create(option);
+                    option.Id = optionId;
+                }
             }
-        });
+        }
         
         request.Infrastructure.Hosts = hosts;
         var infraId =  await _infrastructureRepository.Create(request.Infrastructure);
         request.Infrastructure.Id = infraId;
         
         await _infrastructureRepository.InsertUserInfrastructure(request.UserId, infraId);
-        hosts.ForEach(async host =>
+
+        foreach (var host in hosts)
         {
             await _hostRepository.InsertInfrastructureHost(infraId, host.Id);
 
             foreach (var hostService in host.Services)
             {
                 await _serviceRepository.InsertHostService(host.Id, hostService.Id);
+                
+                foreach (var option in hostService.Options)
+                {
+                    await _optionsRepository.InsertServiceOption(hostService.Id, option.Id);
+                }
             }
-        });
+        }
+        
         return infraId;
     }
     

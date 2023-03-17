@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Confluent.Kafka" Version="1.9.4-RC1" />
+        <PackageReference Include="Docker.DotNet" Version="3.125.12" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>

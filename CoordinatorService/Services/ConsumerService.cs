@@ -11,7 +11,7 @@ public class ConsumerService: IHostedService
 {
     private readonly string _topic;
     private readonly string _groupId = "test_group";
-    private readonly string _bootstrapServers = "localhost:9092";
+    private readonly string _bootstrapServers;
     private readonly IDistributedCache _cache;
     
     public ConsumerService(IDistributedCache cache, string server, string topic)
