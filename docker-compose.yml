@@ -74,6 +74,14 @@ services:
       test: "exit 0"
     # volumes: 
     #   - ./postgresql-auth-service-data:/var/lib/postgresql/data
+
+  monitoring-service:
+    container_name: monitoring-service
+    build:
+      context: .
+      dockerfile: MonitoringModule/Dockerfile
+    ports:
+      - 5292:5292
     
   kafka-ui:
     container_name: kafka-ui
