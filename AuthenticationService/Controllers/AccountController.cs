@@ -78,14 +78,17 @@ namespace AuthenticationService.Controllers {
 
         [Authorize]
         [HttpGet("refresh")]
-        public IActionResult Refresh() {
+        public async Task<IActionResult> Refresh() {
             var refreshToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var claims = _tokenDataManager.GetClaims(refreshToken, _tokenDataManager.RefreshTokenData).ToArray();
             claims = claims[..Math.Min(claims.Length, NumberOfRequiredClaims)];
-            if (_tokenDataManager.GetTimeBeforeExpiration(refreshToken, _tokenDataManager.RefreshTokenData) < Config.AccessTokenLifetime)
-                refreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, claims);
+            //if (_tokenDataManager.GetTimeBeforeExpiration(refreshToken, _tokenDataManager.RefreshTokenData) < Config.AccessTokenLifetime)
+                //refreshToken = _tokenCreator.CreateToken(_tokenDataManager.RefreshTokenData, claims);
 
+            var user = await _usersWorker.GetUser(claims.First(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value);
+            
             return Ok(new {
+                User = user,
                 AccessToken = _tokenCreator.CreateToken(_tokenDataManager.AccessTokenData, claims),
                 RefreshToken = refreshToken
             });
