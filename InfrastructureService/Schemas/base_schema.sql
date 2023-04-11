@@ -94,6 +94,7 @@ create table if not exists options
     id    bigserial
         constraint options_pk
             primary key,
+    name text,
     type  text,
     value text
 );
