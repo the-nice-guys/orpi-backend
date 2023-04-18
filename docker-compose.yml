@@ -49,7 +49,7 @@ services:
       context: .
       dockerfile: AuthenticationService/Dockerfile
     ports:
-      - 7133:7133
+      - 5050:7133
     environment:
       - UserDataBase__Host=auth-service-database
       - UserDataBase__Port=5431

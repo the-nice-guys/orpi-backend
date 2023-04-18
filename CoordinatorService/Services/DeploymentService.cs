@@ -11,9 +11,9 @@ namespace coordinator_service.Services;
 
 public class DeploymentService: IDeploymentService
 {
-    private IDistributedCache _cache;
-    private IProducerService _producerService;
-    private string _requestTopic;
+    private readonly IDistributedCache _cache;
+    private readonly IProducerService _producerService;
+    private readonly string _requestTopic;
     
     public DeploymentService(IDistributedCache cache, IProducerService producerService, IConfiguration configuration)
     {

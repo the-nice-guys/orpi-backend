@@ -18,6 +18,7 @@ builder.Services.AddSingleton<IHostedService, ConsumerService>(provider =>
 builder.Services.AddSingleton<IProducerService, ProducerService>(provider => new ProducerService(builder.Configuration["Kafka:BootstrapServers"]));
 builder.Services.AddSingleton<IDeploymentService, DeploymentService>();
 builder.Services.AddSingleton<IStartService, StartService>();
+builder.Services.AddSingleton<IStopService, StopService>();
 
 
 builder.Services.AddControllers();
@@ -33,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(builder => {
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+});
 
 app.UseHttpsRedirection();
 
