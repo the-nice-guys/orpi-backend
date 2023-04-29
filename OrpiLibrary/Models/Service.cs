@@ -10,7 +10,6 @@ public class Service {
     [JsonPropertyName("uptime")] public TimeSpan Uptime { get; set; }
     [JsonPropertyName("status")] public Status Status { get; set; }
     [JsonPropertyName("last_updated")] public DateTime? LastUpdated { get; set; }
-    [JsonPropertyName("load_data")] public LoadData? LoadData { get; set; }
     [JsonPropertyName("options")] public List<Option> Options { get; set; } = null!;
     [JsonPropertyName("dependencies")] public string[]? Dependencies { get; set; }
 }

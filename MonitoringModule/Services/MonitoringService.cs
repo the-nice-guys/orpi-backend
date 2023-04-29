@@ -5,5 +5,9 @@ using OrpiLibrary.Models;
 namespace MonitoringModule.Services; 
 
 public class MonitoringService : IMonitoringService {
-    public async Task<LoadData> GetLoadData(string serviceId) => new LoadData();
+    public Task<LoadData> GetLoadData(string serviceId) {
+        var task = new Task<LoadData>(() => new LoadData());
+        task.Start();
+        return task;
+    }
 }
