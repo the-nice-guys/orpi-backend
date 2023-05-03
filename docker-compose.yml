@@ -27,6 +27,20 @@ services:
       - ./InfrastructureService/Schemas/base_schema.sql:/docker-entrypoint-initdb.d/000_init.sql
       - ./InfrastructureService/Migrations:/docker-entrypoint-initdb.d/
     #- ./data:/var/lib/postgresql/data
+    
+  history-service-db:
+    image: postgres:14.4
+    container_name: history-service-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=history-service
+    volumes:
+      - ./HistoryService/Schemas/base_schema.sql:/docker-entrypoint-initdb.d/000_init.sql
+      - ./HistoryService/Migrations:/docker-entrypoint-initdb.d/
+    #- ./data:/var/lib/postgresql/data
 
   coordinator-service-cache:
     image: redis:7.0.7
