@@ -62,7 +62,7 @@ public class KafkaConsumerHostedService : IHostedService {
                     message: "Unknown request type.")))
             };
             
-            //task.Start();
+            task.Start();
         }
     }
 }

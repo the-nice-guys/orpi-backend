@@ -4,5 +4,5 @@ using OrpiLibrary.Models;
 namespace MonitoringModule.Interfaces; 
 
 public interface IMonitoringService {
-    public Task<LoadData> GetLoadData(string serviceId);
+    public Task<LoadData?> GetLoadData(string serverEndpoint, string serviceId);
 }

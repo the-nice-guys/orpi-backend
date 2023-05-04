@@ -27,7 +27,7 @@ public class DockerServiceManager : IServiceManager {
             message = $"Failed to create container with name {service.Name}: {exception.Message}";
             result = DockerResponse.Failed;
         }
-
+        
         await responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
     }
 
@@ -137,6 +137,4 @@ public class DockerServiceManager : IServiceManager {
             property?.SetValue(parameters, deserializedValue);
         }
     }
-
-    private const uint DefaultDockerApiPort = 2375;
 }

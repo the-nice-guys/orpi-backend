@@ -11,8 +11,8 @@ public class MonitoringHub : Hub {
         _monitoringService = monitoringService;
     }
     
-    public async Task RequestLoadData(string serviceId) {
-        var data = await _monitoringService.GetLoadData(serviceId);
+    public async Task RequestLoadData(string serverEndpoint, string serviceId) {
+        var data = await _monitoringService.GetLoadData(serverEndpoint, serviceId);
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         await Clients.Caller.SendAsync(ReceiverMethodName, serviceId, timestamp, JsonSerializer.Serialize(data));
     }
