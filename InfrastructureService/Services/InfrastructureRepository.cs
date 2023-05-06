@@ -128,6 +128,16 @@ public class InfrastructureRepository: IInfrastructureRepository
             };
             infrastructures.Add(infrastructure);
         }
+        foreach (var infrastructure in infrastructures)
+        {
+            foreach (var host in infrastructure.Hosts)
+            {
+                foreach (var service in host.Services)
+                {
+                    service.Ip = host.Ip;
+                }
+            }
+        }
         return infrastructures;
     }
 }
