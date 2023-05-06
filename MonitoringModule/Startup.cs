@@ -10,6 +10,15 @@ namespace MonitoringModule;
 
 public class Startup {
     public void ConfigureServices(IServiceCollection services) {
+        services.AddCors(options => options.AddPolicy("CorsPolicy",
+            builder =>
+            {
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowCredentials();
+            })
+        );
         services.AddControllers();
         services.AddSignalR();
         services.AddSingleton<IMonitoringService, MonitoringService>();
@@ -20,10 +29,8 @@ public class Startup {
             app.UseDeveloperExceptionPage();
         }
         
-        app.UseCors(builder => {
-            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-        });
-        
+        app.UseCors("CorsPolicy");
+
         app.UseRouting();
 
         app.UseEndpoints(endpoints => {

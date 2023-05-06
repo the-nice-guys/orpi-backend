@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using MonitoringModule.Interfaces;
+using MonitoringModule.Models;
 
 namespace MonitoringModule.Hubs; 
 
@@ -11,10 +12,16 @@ public class MonitoringHub : Hub {
         _monitoringService = monitoringService;
     }
     
-    public async Task RequestLoadData(string serverEndpoint, string serviceId) {
-        var data = await _monitoringService.GetLoadData(serverEndpoint, serviceId);
+    public async Task RequestLoadData(LoadDataRequest request) {
+        Console.WriteLine("Got request");
+        var data = await _monitoringService.GetLoadData(request.ServerEndpoint, request.ServiceId);
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        await Clients.Caller.SendAsync(ReceiverMethodName, serviceId, timestamp, JsonSerializer.Serialize(data));
+        await Clients.Caller.SendAsync(ReceiverMethodName, new LoadDataResponse()
+        {
+            ServiceId = request.ServiceId,
+            Timestamp = timestamp,
+            LoadData = data
+        });
     }
 
     private const string ReceiverMethodName = "ReceiveLoadData";
