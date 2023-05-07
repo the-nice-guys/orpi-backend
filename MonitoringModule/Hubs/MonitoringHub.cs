@@ -13,7 +13,6 @@ public class MonitoringHub : Hub {
     }
     
     public async Task RequestLoadData(LoadDataRequest request) {
-        Console.WriteLine("Got request");
         var data = await _monitoringService.GetLoadData(request.ServerEndpoint, request.ServiceId);
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         await Clients.Caller.SendAsync(ReceiverMethodName, new LoadDataResponse()
