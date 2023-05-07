@@ -5,5 +5,6 @@ public enum DockerRequest {
     StartContainer,
     StopContainer,
     RestartContainer,
-    DeleteContainer
+    DeleteContainer,
+    CreateNetwork
 }

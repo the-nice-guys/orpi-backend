@@ -9,13 +9,34 @@ using JetBrains.Annotations;
 using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
+using Network = OrpiLibrary.Models.Network;
 
 namespace DockerModule.Services;
 
 [UsedImplicitly]
 public class DockerServiceManager : IServiceManager {
+    public async Task CreateNetwork(Network network, Guid requestId, IResponder responder) {
+        var client = GetIpClient(network.Ip);
+        var message = $"Successfully created network with name {network.Name}.";
+        var result = DockerResponse.Ok;
+        var parameters = new NetworksCreateParameters {
+            Name = network.Name,
+        };
+        
+        try {
+            await client.Networks.CreateNetworkAsync(parameters);
+        } catch (Exception exception) {
+            message = $"Failed to create network with name {network.Name}: {exception.Message}";
+            result = DockerResponse.Failed;
+        }
+        
+        await responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
+    }
+    
+    #region CreateService
+
     public async Task CreateService(Service service, Guid requestId, IResponder responder) {
-        var client = GetServiceClient(service);
+        var client = GetIpClient(service.Ip);
         var parameters = new CreateContainerParameters();
         var message = $"Successfully created container with name {service.Name}.";
         var result = DockerResponse.Ok;
@@ -30,11 +51,13 @@ public class DockerServiceManager : IServiceManager {
         
         await responder.SendResponse(new Response<DockerResponse>(requestId, result, message));
     }
+    
+    #endregion
 
     #region StartService
     
     public async Task StartService(Service service, Guid requestId, IResponder responder) {
-        var client = GetServiceClient(service);
+        var client = GetIpClient(service.Ip);
         var parameters = new ContainerStartParameters();
         string message;
         DockerResponse result;
@@ -58,7 +81,7 @@ public class DockerServiceManager : IServiceManager {
     #region StopService
     
     public async Task StopService(Service service, Guid requestId, IResponder responder) {
-        var client = GetServiceClient(service);
+        var client = GetIpClient(service.Ip);
         var parameters = new ContainerStopParameters();
         string message;
         DockerResponse result;
@@ -82,7 +105,7 @@ public class DockerServiceManager : IServiceManager {
     #region RestartService
     
     public async Task RestartService(Service service, Guid requestId, IResponder responder) {
-        var client = GetServiceClient(service);
+        var client = GetIpClient(service.Ip);
         var parameters = new ContainerRestartParameters();
         var message = $"Successfully restarted container with name {service.Name}.";
         var result = DockerResponse.Ok;
@@ -103,7 +126,7 @@ public class DockerServiceManager : IServiceManager {
     #region DeleteService
 
     public async Task DeleteService(Service service, Guid requestId, IResponder responder) {
-        var client = GetServiceClient(service);
+        var client = GetIpClient(service.Ip);
         var parameters = new ContainerRemoveParameters();
         var message = $"Successfully deleted container with name {service.Name}.";
         var result = DockerResponse.Ok;
@@ -121,8 +144,8 @@ public class DockerServiceManager : IServiceManager {
     
     #endregion
 
-    private static DockerClient GetServiceClient(Service service) {
-        var uri = new Uri($"http://{service.Ip}");
+    private static DockerClient GetIpClient(string ip) {
+        var uri = new Uri($"http://{ip}");
         return new DockerClientConfiguration(uri).CreateClient();
     }
 

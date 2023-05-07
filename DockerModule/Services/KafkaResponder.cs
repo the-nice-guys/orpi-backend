@@ -35,7 +35,6 @@ public class KafkaResponder : IResponder {
         var message = JsonSerializer.Serialize(response);
 
         await _producer.ProduceAsync(Config.KafkaResponseTopic, new Message<Null, string> {Value = message});
-        
     }
 
     private readonly IProducer<Null, string> _producer;

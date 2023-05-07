@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,15 +38,21 @@ public class KafkaConsumerHostedService : IHostedService {
             var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);
             if (request is null) 
                 continue;
+
+            if (request.Type == DockerRequest.CreateNetwork) {
+                var network = JsonSerializer.Deserialize<Network>(request.Payload);
+                if (network is null) {
+                    SendFailedResponse(request.Guid, "Failed to get network parameters.");
+                    continue;
+                }
+
+                ServiceManager.CreateNetwork(network, request.Guid, Responder).Start();
+                continue;
+            }
             
             var service = JsonSerializer.Deserialize<Service>(request.Payload);
             if (service is null) {
-                Responder.SendResponse(new Response<DockerResponse>(
-                    guid: request.Guid,
-                    result: DockerResponse.Failed,
-                    message: "Failed to get service parameters.")
-                );
-                
+                SendFailedResponse(request.Guid, "Failed to get service parameters.");
                 continue;
             }
 
@@ -64,5 +71,13 @@ public class KafkaConsumerHostedService : IHostedService {
             
             task.Start();
         }
+    }
+
+    private void SendFailedResponse(Guid requestId, string message) {
+        Responder.SendResponse(new Response<DockerResponse>(
+            guid: requestId,
+            result: DockerResponse.Failed,
+            message: message)
+        );
     }
 }
