@@ -30,7 +30,7 @@ public class HistoryController : ControllerBase
     
     [HttpPost]
     [Route("write_history")]
-    public async Task<IActionResult> GetHistory(WriteHistoryRequest request)
+    public async Task<IActionResult> WriteHistory(WriteHistoryRequest request)
     {
         await _historyRepository.WriteHistory(request.InfrastructureId, 
             new HistoryLog()
