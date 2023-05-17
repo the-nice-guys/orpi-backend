@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using DockerModule.Interfaces;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
 using Config = OrpiLibrary.Config;
@@ -11,10 +12,15 @@ using Config = OrpiLibrary.Config;
 namespace DockerModule.Services;
 
 [UsedImplicitly]
-public class KafkaResponder : IResponder {
-    public KafkaResponder() {
+public class KafkaResponder : IResponder
+{
+    private IConfiguration _configuration;
+    public KafkaResponder(IConfiguration configuration)
+    {
+        _configuration = configuration;
+        
         var config = new ConsumerConfig {
-            BootstrapServers = $"{Config.KafkaBootstrapServerHost}:{Config.KafkaBootstrapServerPort}"
+            BootstrapServers = _configuration["Kafka:BootstrapServers"]
         };
         
         _producer = new ProducerBuilder<Null, string>(config).Build();
