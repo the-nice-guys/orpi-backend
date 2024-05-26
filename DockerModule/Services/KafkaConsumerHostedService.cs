@@ -5,6 +5,8 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Confluent.Kafka;
 using DockerModule.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
@@ -13,10 +15,23 @@ using Config = OrpiLibrary.Config;
 
 namespace DockerModule.Services;
 
-public class KafkaConsumerHostedService : IHostedService {
-    [Dependency] [UsedImplicitly] public IResponder Responder { get; set; } = null!;
-    [Dependency] [UsedImplicitly] public IServiceManager ServiceManager { get; set; } = null!;
-    
+public class KafkaConsumerHostedService : IHostedService
+{
+    private readonly IResponder Responder;
+    private readonly IServiceManager ServiceManager;
+    private readonly IConfiguration _configuration;
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public KafkaConsumerHostedService(IConfiguration configuration, IServiceScopeFactory factory)
+    {
+        _scopeFactory = factory;
+        var scope = factory.CreateScope();
+        _configuration = configuration;
+        ServiceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
+        Responder = scope.ServiceProvider.GetRequiredService<IResponder>();
+    }
+
+
     public Task StartAsync(CancellationToken cancellationToken) {
         Task.Run(() => StartToConsume(cancellationToken), cancellationToken);
         return Task.CompletedTask;
@@ -27,11 +42,11 @@ public class KafkaConsumerHostedService : IHostedService {
     private async void StartToConsume(CancellationToken cancellationToken) {
         var config = new ConsumerConfig {
             GroupId = Config.KafkaRequestGroupId,
-            BootstrapServers = $"{Config.KafkaBootstrapServerHost}:{Config.KafkaBootstrapServerPort}",
+            BootstrapServers = _configuration["Kafka:BootstrapServers"],
         };
         
         using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
-        consumer.Subscribe(Config.KafkaRequestTopic);
+        consumer.Subscribe(_configuration["Kafka:RequestTopic"]);
         while (!cancellationToken.IsCancellationRequested) {
             var message = consumer.Consume(cancellationToken).Message.Value;
             var request = JsonSerializer.Deserialize<Request<DockerRequest>>(message);

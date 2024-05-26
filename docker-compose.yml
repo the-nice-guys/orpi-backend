@@ -95,7 +95,32 @@ services:
       context: .
       dockerfile: MonitoringModule/Dockerfile
     ports:
-      - 5292:5292
+      - "5292:5292"
+  
+  history-service:
+    container_name: history-service
+    build:
+      context: .
+      dockerfile: HistoryService/Dockerfile
+    ports:
+      - "5056:5056"
+  
+  coordinator-service:
+    container_name: coordinator-service
+    build:
+      context: .
+      dockerfile: CoordinatorService/Dockerfile
+    ports:
+      - "5287:5287"
+  
+  docker-module:
+    container_name: docker-module
+    build:
+      context: .
+      dockerfile: DockerModule/Dockerfile
+    ports:
+      - "5074:5074"
+    
     
   kafka-ui:
     container_name: kafka-ui
@@ -122,6 +147,8 @@ services:
     container_name: broker
     ports:
       - "9092:9092"
+    expose:
+      - "29092"
     depends_on:
       - zookeeper
     environment:
