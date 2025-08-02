@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Confluent.Kafka;
 using DockerModule.Interfaces;
@@ -10,25 +9,24 @@ using Microsoft.Extensions.DependencyInjection;
 using OrpiLibrary.Models;
 using OrpiLibrary.Models.Common;
 using OrpiLibrary.Models.Docker.Enums;
-using Unity;
 using Config = OrpiLibrary.Config;
 
 namespace DockerModule.Services;
 
 public class KafkaConsumerHostedService : IHostedService
 {
-    private readonly IResponder Responder;
-    private readonly IServiceManager ServiceManager;
+    private readonly IResponder _responder;
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IUpdateRepository _updateRepository;
 
     public KafkaConsumerHostedService(IConfiguration configuration, IServiceScopeFactory factory)
     {
         _scopeFactory = factory;
         var scope = factory.CreateScope();
         _configuration = configuration;
-        ServiceManager = scope.ServiceProvider.GetRequiredService<IServiceManager>();
-        Responder = scope.ServiceProvider.GetRequiredService<IResponder>();
+        _responder = scope.ServiceProvider.GetRequiredService<IResponder>();
+        _updateRepository = scope.ServiceProvider.GetRequiredService<IUpdateRepository>();
     }
 
 
@@ -55,7 +53,7 @@ public class KafkaConsumerHostedService : IHostedService
             
             var service = JsonSerializer.Deserialize<Service>(request.Payload);
             if (service is null) {
-                Responder.SendResponse(new Response<DockerResponse>(
+                _responder.SendResponse(new Response<DockerResponse>(
                     guid: request.Guid,
                     result: DockerResponse.Failed,
                     message: "Failed to get service parameters.")
@@ -64,20 +62,7 @@ public class KafkaConsumerHostedService : IHostedService
                 continue;
             }
 
-            var task = request.Type switch {
-                DockerRequest.CreateContainer => ServiceManager.CreateService(service, request.Guid, Responder),
-                DockerRequest.StartContainer => ServiceManager.StartService(service, request.Guid, Responder),
-                DockerRequest.StopContainer => ServiceManager.StopService(service, request.Guid, Responder),
-                DockerRequest.RestartContainer => ServiceManager.RestartService(service, request.Guid, Responder),
-                DockerRequest.DeleteContainer => ServiceManager.DeleteService(service, request.Guid, Responder),
-
-                _ => new Task(() => Responder.SendResponse(new Response<DockerResponse>(
-                    guid: request.Guid,
-                    result: DockerResponse.NotFound,
-                    message: "Unknown request type.")))
-            };
-            
-            task.Start();
+            await _updateRepository.PushUpdate(request.Guid, service.Ip, request.Type, request.Payload, cancellationToken);
         }
     }
 }

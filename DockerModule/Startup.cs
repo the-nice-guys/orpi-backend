@@ -9,13 +9,25 @@ using Unity;
 
 namespace DockerModule;
 
-public class Startup {
+public class Startup
+{
+    private readonly WebHostBuilderContext _webHostBuilderContext;
+
+    public Startup(WebHostBuilderContext webHostBuilderContext)
+    {
+        _webHostBuilderContext = webHostBuilderContext;
+    }
 
     public void ConfigureServices(IServiceCollection services) {
         services.AddScoped<IResponder, KafkaResponder>();
-        services.AddScoped<IServiceManager, DockerServiceManager>();
-        services.AddHostedService<KafkaConsumerHostedService>();
+        services.AddSingleton<IUpdateRepository, UpdateRepository>();
+        services
+            .AddOptions<UpdateRepositoryConfig>()
+            .Bind(_webHostBuilderContext.Configuration.GetSection(nameof(UpdateRepositoryConfig)));
+ 
         services.AddControllers();
+        
+        services.AddHostedService<KafkaConsumerHostedService>();
     }
     
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

@@ -120,7 +120,19 @@ services:
       dockerfile: DockerModule/Dockerfile
     ports:
       - "5074:5074"
-    
+
+  docker-module-db:
+    container_name: docker-module-db
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=docker-module
+    volumes:
+      - ./DockerModule/Schemas/base_schema.sql:/docker-entrypoint-initdb.d/000_init.sql
+    #- ./data:/var/lib/postgresql/data
     
   kafka-ui:
     container_name: kafka-ui
